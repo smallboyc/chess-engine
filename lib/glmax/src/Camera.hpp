@@ -1,7 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
 #include "glm/fwd.hpp"
-#include "glm/geometric.hpp"
 
 namespace glmax {
 
@@ -33,7 +32,7 @@ public:
     void      process_scroll(double yoffset);
     void      process_input(int key, int action);
     //
-    bool is_track_ball() { return _is_track_ball; };
+    bool is_track_ball() const { return _is_track_ball; };
 };
 
-} // namespace max
+}  // namespace glmax

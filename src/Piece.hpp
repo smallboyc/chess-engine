@@ -6,15 +6,17 @@ class Piece {
 public:
     Piece() = default;
     ~Piece();
-    void draw(const glmax::Shader& program);
+    void render(glmax::Shader& shader);
     void setTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale);
+    void setup_buffers();
+    //
+    glmax::Mesh m_mesh;
 
-    GLuint _vao;
-    GLuint _vbo;
-    GLuint _ebo;
-
-    glmax::Mesh _mesh;
-    void        setup_buffers();
 private:
-    glm::mat4   _model_matrix;
+    GLuint m_vao;
+    GLuint m_vbo;
+    GLuint m_ebo;
+    glm::mat4 m_modelMatrix;
+
+    void      draw(const glmax::Submesh& submesh, const glmax::Material& material);
 };

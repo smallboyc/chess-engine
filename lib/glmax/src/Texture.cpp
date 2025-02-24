@@ -1,6 +1,4 @@
 #include "Texture.hpp"
-
-#pragma once
 #include <iostream>
 #include <string>
 #include "Shader.hpp"

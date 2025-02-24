@@ -88,14 +88,15 @@ void fillMaterial(Material& mat, const tinyobj::material_t& material)
 }
 
 // load .obj mesh
-void Mesh::loadMesh(const std::string& obj_path_file, const std::string& mtl_path_file)
+void Mesh::loadMesh(const std::string& objPath, const std::string& mtlPath)
 {
+    std::string              relativePath = "../../assets/models/";
     tinyobj::ObjReaderConfig reader_config;
-    reader_config.mtl_search_path = mtl_path_file;
+    reader_config.mtl_search_path = relativePath + mtlPath;
 
     tinyobj::ObjReader reader;
 
-    if (!reader.ParseFromFile(obj_path_file, reader_config))
+    if (!reader.ParseFromFile(relativePath + objPath, reader_config))
     {
         if (!reader.Error().empty())
         {
