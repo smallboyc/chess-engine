@@ -10,13 +10,14 @@
 int main()
 {
     // basic camera variables (test) next use the Camera class
-    glm::vec3 _position = glm::vec3(0.0f, -1.0f, 12.0f);
+    glm::vec3 _position = glm::vec3(0.0f, 2.0f, 12.0f);
     glm::vec3 _target   = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 _front    = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 _up       = glm::vec3(0.0f, 1.0f, 0.0f);
     //
     glmax::Shader shader{};
     Piece         piece{};
+    Piece         bishop{};
     quick_imgui::loop(
         "Chess",
         /* init: */
@@ -24,6 +25,8 @@ int main()
             shader.loadShader("model.vs.glsl", "model.fs.glsl");
             piece.m_mesh.loadMesh("chessboard/chessboard.obj", "chessboard");
             piece.setup_buffers();
+            bishop.m_mesh.loadMesh("bishop/bishop.obj", "bishop");
+            bishop.setup_buffers();
         },
         /* loop: */
         [&]() {
@@ -42,8 +45,10 @@ int main()
 
             // Render pieces / board
             shader.use();
-            piece.setTransform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(glm::radians(20.0f), glm::radians(45.0f), 0.0f), glm::vec3(1.0f));
+            piece.setTransform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
             piece.render(shader);
+            bishop.setTransform(glm::vec3(-3.5f, 0.0f, -3.5f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
+            bishop.render(shader);
             ImGui::Begin("Test");
             ImGui::Text("Hello Test");
             ImGui::End();
