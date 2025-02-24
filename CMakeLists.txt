@@ -42,4 +42,18 @@ target_include_directories(${PROJECT_NAME} PRIVATE src)
 
 # Add quick-imgui library
 add_subdirectory(lib/quick_imgui)
+
+# Add glm library (fetch)
 target_link_libraries(${PROJECT_NAME} PRIVATE quick_imgui::quick_imgui)
+
+include(FetchContent)
+
+FetchContent_Declare(
+	glm
+	GIT_REPOSITORY	https://github.com/g-truc/glm.git
+	GIT_TAG 	bf71a834948186f4097caa076cd2663c69a10e1e
+)
+
+FetchContent_MakeAvailable(glm)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE glm::glm)

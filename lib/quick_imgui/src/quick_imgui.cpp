@@ -18,7 +18,7 @@ void loop(const char* window_name, std::function<void()> const& init_callback, s
         glfwPollEvents();
         ImGuiWrapper::begin_frame();
         loop_callback();
-        ImGuiWrapper::end_frame(window, {0.302f, 0.302f, 0.302f, 1.000f});
+        ImGuiWrapper::end_frame(window);
     }
 
     ImGuiWrapper::shutdown(window);
