@@ -3,8 +3,41 @@
 #include <imgui/backends/imgui_impl_glfw.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include <iostream>
+#include "Camera.hpp"
 
 namespace ImGuiWrapper {
+
+glmax::Camera Camera(false);
+
+int window_width  = 1000;
+int window_height = 700;
+
+// Implémentations des callbacks
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (!Camera.is_track_ball())
+        Camera.process_input(key, action);
+}
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    if (Camera.is_track_ball())
+        Camera.process_scroll(yoffset);
+}
+
+void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    if (Camera.is_track_ball())
+        Camera.process_mouse_movement(xpos, ypos);
+}
+
+void size_callback(GLFWwindow* /*window*/, int width, int height)
+{
+    window_width  = width;
+    window_height = height;
+}
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -51,6 +84,13 @@ GLFWwindow* create_window(const char* title)
         std::terminate();
     }
     glfwSwapInterval(1); // Enable vsync
+
+    // Input callbacks
+    glfwSetKeyCallback(window, &key_callback);
+    glfwSetMouseButtonCallback(window, &mouse_button_callback);
+    glfwSetScrollCallback(window, &scroll_callback);
+    glfwSetCursorPosCallback(window, &cursor_position_callback);
+    glfwSetWindowSizeCallback(window, &size_callback);
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -114,7 +154,7 @@ void end_frame(GLFWwindow* window)
     int display_w, display_h;
     glfwGetFramebufferSize(window, &display_w, &display_h);
     glViewport(0, 0, display_w, display_h);
-   
+
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     // Update and Render additional Platform Windows
