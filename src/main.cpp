@@ -10,7 +10,7 @@
 int main()
 {
     // basic camera variables (test) next use the Camera class
-    glm::vec3 _position = glm::vec3(0.0f, 0.0f, 5.0f);
+    glm::vec3 _position = glm::vec3(0.0f, -1.0f, 12.0f);
     glm::vec3 _target   = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 _front    = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 _up       = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -22,7 +22,7 @@ int main()
         /* init: */
         [&]() {
             shader.loadShader("model.vs.glsl", "model.fs.glsl");
-            piece.m_mesh.loadMesh("special_block/special_block.obj", "special_block");
+            piece.m_mesh.loadMesh("chessboard/chessboard.obj", "chessboard");
             piece.setup_buffers();
         },
         /* loop: */
