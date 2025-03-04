@@ -36,10 +36,10 @@ void Camera::process_mouse_movement(double xpos, double ypos)
     _yaw += xoffset * _sensitivity;
     _pitch -= yoffset * _sensitivity;
 
-    if (_pitch > 89.0f)
-        _pitch = 89.0f;
-    if (_pitch < -89.0f)
-        _pitch = -89.0f;
+    if (_pitch > 45.0f)
+        _pitch = 45.0f;
+    if (_pitch < 0.0f)
+        _pitch = 0.0f;
 }
 
 void Camera::process_scroll(double yoffset)
@@ -47,8 +47,8 @@ void Camera::process_scroll(double yoffset)
     _radius -= yoffset * 0.1f;
     if (_radius < 1.0f)
         _radius = 1.0f;
-    if (_radius > 10.0f)
-        _radius = 10.0f;
+    if (_radius > 12.0f)
+        _radius = 12.0f;
 }
 
 void Camera::process_input(int key, int action)
@@ -70,4 +70,4 @@ void Camera::process_input(int key, int action)
         _position += glm::normalize(glm::cross(_front, _up)) * _sensitivity;
     }
 }
-} // namespace max
+} // namespace glmax
