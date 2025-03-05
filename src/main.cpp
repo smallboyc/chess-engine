@@ -2,7 +2,7 @@
 #include <glm/glm.hpp>
 #include <quick_imgui/quick_imgui.hpp>
 #include "Camera.hpp"
-#include "Piece.hpp"
+#include "PieceManager.hpp"
 #include "Shader.hpp"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/fwd.hpp"
@@ -42,14 +42,14 @@ void size_callback(int width, int height)
 int main()
 {
     glmax::Shader shader{};
-    Piece         piece{};
-    Piece         bishop{};
-    auto          window = quick_imgui::WindowWrapper("Quick ImGui", [&]() {
+    PieceManager  pawn{};
+    // PieceManager  chessboard{};
+    auto window = quick_imgui::WindowWrapper("Quick ImGui", [&]() {
         shader.loadShader("model.vs.glsl", "model.fs.glsl");
-        piece.m_mesh.loadMesh("chessboard/chessboard.obj", "chessboard");
-        piece.setup_buffers();
-        bishop.m_mesh.loadMesh("bishop/bishop.obj", "bishop");
-        bishop.setup_buffers();
+        // chessboard.m_mesh.loadMesh("chessboard/chessboard.obj", "chessboard");
+        // chessboard.setup_buffers();
+        pawn.m_mesh.loadMesh("pawn/pawn.obj", "pawn");
+        pawn.setup_buffers();
     });
 
     // callbacks
@@ -74,10 +74,10 @@ int main()
 
         // Render pieces / board
         shader.use();
-        piece.setTransform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
-        piece.render(shader);
-        bishop.setTransform(glm::vec3(-3.5f, 0.0f, -3.5f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
-        bishop.render(shader);
+        // chessboard.setTransform(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
+        // chessboard.render(shader);
+        pawn.setTransform(glm::vec3(-3.5f, 0.0f, -3.5f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
+        pawn.render(shader);
         ImGui::Begin("Test");
         ImGui::Text("Hello Test");
         ImGui::End();
