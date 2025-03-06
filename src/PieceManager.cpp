@@ -1,5 +1,4 @@
 #include "PieceManager.hpp"
-#include <iostream>
 #include "Shader.hpp"
 #include "Texture.hpp"
 #include "glm/ext/matrix_transform.hpp"
@@ -9,34 +8,15 @@ PieceManager::~PieceManager()
 {
 }
 
-PieceManager::PieceManager(bool is_chessboard)
+PieceManager::PieceManager(std::array<std::unique_ptr<Piece>, 64>& chessboard)
 {
-    if (is_chessboard)
+    for (int i = 0; i < chessboard.size(); i++)
     {
-        m_modelMatrices.resize(1);
-        m_modelMatrices[0] = glm::mat4(1.0f);
-    }
-    else // pieces
-    {
-        for (const auto& positions : m_initial_positions)
+        if (chessboard[i])
         {
-            m_modelMatrices.resize(64);
-            m_pieceColors.resize(64);
-            if (positions.piece_type == Type::PAWN)
-            {
-                for (int i : positions.white_position)
-                {
-                    glm::vec3 position = world_position(get_position(i));
-                    m_modelMatrices[i] = glm::translate(glm::mat4(1.0f), position);
-                    m_pieceColors[i]   = m_white_color;
-                }
-                for (int i : positions.black_position)
-                {
-                    glm::vec3 position = world_position(get_position(i));
-                    m_modelMatrices[i] = glm::translate(glm::mat4(1.0f), position);
-                    m_pieceColors[i]   = m_black_color;
-                }
-            }
+            glm::vec3 position = world_position(get_position(i));
+            m_modelMatrices.emplace_back(glm::translate(glm::mat4(1.0f), position));
+            m_pieceColors.emplace_back(chessboard[i]->getColor());
         }
     }
 }
@@ -104,13 +84,13 @@ void PieceManager::setupBuffers()
     }
     if (!m_pieceColors.empty())
     {
-        m_instanceVBO.init();
-        m_instanceVBO.bind();
-        m_instanceVBO.setData(m_pieceColors.data(), m_pieceColors.size() * sizeof(glm::vec3));
+        m_colorVBO.init();
+        m_colorVBO.bind();
+        m_colorVBO.setData(m_pieceColors.data(), m_pieceColors.size() * sizeof(glm::vec3));
         glEnableVertexAttribArray(7);
         glVertexAttribPointer(7, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (const GLvoid*)0);
         glVertexAttribDivisor(7, 1);
-        m_instanceVBO.unbind();
+        m_colorVBO.unbind();
     }
     m_vao.unbind();
 }

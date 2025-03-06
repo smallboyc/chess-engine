@@ -1,13 +1,27 @@
 #pragma once
 #include <glm/glm.hpp>
+#include <vector>
+
+enum class Color {
+    White,
+    Black,
+    None,
+};
+
 enum class Type {
-    PAWN,
-    KNIGHT,
-    BISHOP,
-    ROOK,
-    QUEEN,
-    KING,
-    CHESSBOARD,
+    King,
+    Queen,
+    Bishop,
+    Knight,
+    Rook,
+    Pawn,
+    None,
+};
+
+struct PiecePositions {
+    Type             piece_type;
+    std::vector<int> black_position;
+    std::vector<int> white_position;
 };
 
 inline glm::vec2 get_position(const int index)
