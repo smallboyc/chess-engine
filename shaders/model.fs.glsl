@@ -15,10 +15,13 @@ uniform vec3 Kd;
 uniform vec3 Ks;
 uniform float Ns;
 
+uniform bool useTexture;
 uniform sampler2D map_Kd;
 
 void main() {
-    vec4 texColor = texture(map_Kd, TexCoords);
+
+    vec3 diffuseColor = useTexture ? texture(map_Kd, TexCoords).rgb : Kd;
+
     // Ambient
     vec3 ambient = Ka * (lightColor * 0.25);
 
@@ -26,8 +29,7 @@ void main() {
     vec3 L = normalize(lightPos - FragPos);
     vec3 N = normalize(Normal);
     float diff = max(dot(L, N), 0.0);
-    vec3 diffuse = diff * texColor.rgb * lightColor;
-    // vec3 diffuse = diff * Kd * lightColor;
+    vec3 diffuse = diff * diffuseColor * lightColor;
 
     // Specular
     vec3 V = normalize(viewPos - FragPos);

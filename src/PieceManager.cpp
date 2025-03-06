@@ -1,28 +1,31 @@
 #include "PieceManager.hpp"
+#include <iostream>
 #include "Shader.hpp"
 #include "Texture.hpp"
 #include "glm/ext/matrix_transform.hpp"
-
+#include "utils.hpp"
 PieceManager::~PieceManager()
 {
-   
 }
 
-PieceManager::PieceManager()
+PieceManager::PieceManager(Type type)
 {
-    init_pieces();
-}
-
-void PieceManager::init_pieces()
-{
-    m_modelMatrices.resize(16);
-    // Pour l'instant on gère juste les 16 pions
-    for (int i = 0; i < m_modelMatrices.size(); i++)
+    if (type == Type::PAWN)
     {
-        int       x        = i % 8;
-        int       y        = i / 8 ? 6 : 1;
-        glm::vec3 position = glm::vec3(-3.5f + x, 0.0f, -3.5f + y);
-        m_modelMatrices[i] = glm::translate(glm::mat4(1.0f), position);
+        m_modelMatrices.resize(16);
+        // Pour l'instant on gère juste les 16 pions
+        for (int i = 0; i < m_modelMatrices.size(); i++)
+        {
+            int       x        = i % 8;
+            int       y        = i / 8 ? 6 : 1;
+            glm::vec3 position = world_position({x, y});
+            m_modelMatrices[i] = glm::translate(glm::mat4(1.0f), position);
+        }
+    }
+    else if (type == Type::CHESSBOARD)
+    {
+        m_modelMatrices.resize(1);
+        m_modelMatrices[0] = glm::mat4(1.0f);
     }
 }
 
@@ -56,36 +59,38 @@ void PieceManager::setup_buffers()
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(glmax::Vertex), (const GLvoid*)offsetof(glmax::Vertex, _tex_coord));
 
     // Lier et configurer le buffer pour les matrices d'instance
-    m_instanceVBO.init();
-    m_instanceVBO.bind();
-    m_instanceVBO.setData(m_modelMatrices.data(), m_modelMatrices.size() * sizeof(glm::mat4));
+    if (!m_modelMatrices.empty())
+    {
+        m_instanceVBO.init();
+        m_instanceVBO.bind();
+        m_instanceVBO.setData(m_modelMatrices.data(), m_modelMatrices.size() * sizeof(glm::mat4));
 
-    // Lier les matrices d'instance aux attributs de vertex
-    glEnableVertexAttribArray(3);
-    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (const GLvoid*)0);
-    glVertexAttribDivisor(3, 1);
-    //
-    glEnableVertexAttribArray(4);
-    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (const GLvoid*)(1 * sizeof(glm::vec4)));
-    glVertexAttribDivisor(4, 1);
-    //
-    glEnableVertexAttribArray(5);
-    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (const GLvoid*)(2 * sizeof(glm::vec4)));
-    glVertexAttribDivisor(5, 1);
-    //
-    glEnableVertexAttribArray(6);
-    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (const GLvoid*)(3 * sizeof(glm::vec4)));
-    glVertexAttribDivisor(6, 1);
+        // Lier les matrices d'instance aux attributs de vertex
+        glEnableVertexAttribArray(3);
+        glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (const GLvoid*)0);
+        glVertexAttribDivisor(3, 1);
+        //
+        glEnableVertexAttribArray(4);
+        glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (const GLvoid*)(1 * sizeof(glm::vec4)));
+        glVertexAttribDivisor(4, 1);
+        //
+        glEnableVertexAttribArray(5);
+        glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (const GLvoid*)(2 * sizeof(glm::vec4)));
+        glVertexAttribDivisor(5, 1);
+        //
+        glEnableVertexAttribArray(6);
+        glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (const GLvoid*)(3 * sizeof(glm::vec4)));
+        glVertexAttribDivisor(6, 1);
 
-    // Nettoyage
-    m_instanceVBO.unbind();
+        // Nettoyage
+        m_instanceVBO.unbind();
+    }
     m_vao.unbind();
 }
 
 void PieceManager::render(glmax::Shader& shader)
 {
     m_vao.bind();
-
     // On boucle sur chaque sous-maille (submesh) pour dessiner ses instances
     for (const glmax::Submesh& submesh : m_mesh.getSubmeshes())
     {
@@ -97,23 +102,38 @@ void PieceManager::render(glmax::Shader& shader)
         shader.setUniform3fv("Ks", material.m_Ks);
         shader.setUniform1f("Ns", material.m_Ns);
 
-        // Configurer la texture diffuse si elle existe
-        shader.setUniform1i("map_Kd", material.m_mapKd.getID());
-        material.m_mapKd.bind(material.m_mapKd.getID());
+        if (material.m_hasMapKd)
+        {
+            shader.setUniform1i("map_Kd", material.m_mapKd.getID());
+            material.m_mapKd.bind(material.m_mapKd.getID());
+            shader.setUniform1i("useTexture", true);
+        }
+        else
+        {
+            shader.setUniform1i("useTexture", false);
+        }
         // Ici, on utilise glDrawElementsInstanced pour dessiner toutes les instances
-        glDrawElementsInstanced(GL_TRIANGLES, submesh.m_index_count, GL_UNSIGNED_INT, (const GLvoid*)(submesh.m_index_offset * sizeof(uint32_t)), m_modelMatrices.size());
-        material.m_mapKd.unbind();
+        if (m_modelMatrices.size() > 1)
+            glDrawElementsInstanced(GL_TRIANGLES, submesh.m_index_count, GL_UNSIGNED_INT, (const GLvoid*)(submesh.m_index_offset * sizeof(uint32_t)), m_modelMatrices.size());
+        else
+            glDrawElements(GL_TRIANGLES, submesh.m_index_count, GL_UNSIGNED_INT, (const GLvoid*)(submesh.m_index_offset * sizeof(uint32_t)));
+        //
+        if (material.m_hasMapKd)
+            material.m_mapKd.unbind();
     }
 
     m_vao.unbind();
 }
 
-void PieceManager::setTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale)
+void PieceManager::setTransform(const unsigned int index, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale)
 {
-    glm::mat4 translation = glm::translate(glm::mat4(1.0f), position);
-    glm::mat4 rotationX   = glm::rotate(glm::mat4(1.0f), rotation.x, glm::vec3(1, 0, 0));
-    glm::mat4 rotationY   = glm::rotate(glm::mat4(1.0f), rotation.y, glm::vec3(0, 1, 0));
-    glm::mat4 rotationZ   = glm::rotate(glm::mat4(1.0f), rotation.z, glm::vec3(0, 0, 1));
-    glm::mat4 scaling     = glm::scale(glm::mat4(1.0f), scale);
-    m_modelMatrix         = translation * rotationX * rotationY * rotationZ * scaling;
+    glm::mat4 translation  = glm::translate(glm::mat4(1.0f), position);
+    glm::mat4 rotationX    = glm::rotate(glm::mat4(1.0f), rotation.x, glm::vec3(1, 0, 0));
+    glm::mat4 rotationY    = glm::rotate(glm::mat4(1.0f), rotation.y, glm::vec3(0, 1, 0));
+    glm::mat4 rotationZ    = glm::rotate(glm::mat4(1.0f), rotation.z, glm::vec3(0, 0, 1));
+    glm::mat4 scaling      = glm::scale(glm::mat4(1.0f), scale);
+    m_modelMatrices[index] = translation * rotationX * rotationY * rotationZ * scaling;
+    m_instanceVBO.bind();
+    m_instanceVBO.setData(m_modelMatrices.data(), m_modelMatrices.size() * sizeof(glm::mat4));
+    m_instanceVBO.unbind();
 }

@@ -69,22 +69,40 @@ void fillMaterial(Material& mat, const tinyobj::material_t& material)
 
     // Textures
     if (!material.ambient_texname.empty())
+    {
         mat.m_mapKa.loadTexture(material.ambient_texname);
+        mat.m_hasMapKa = true;
+    }
 
     if (!material.diffuse_texname.empty())
+    {
         mat.m_mapKd.loadTexture(material.diffuse_texname);
+        mat.m_hasMapKd = true;
+    }
 
     if (!material.specular_texname.empty())
+    {
         mat.m_mapKs.loadTexture(material.specular_texname);
+        mat.m_hasMapKs = true;
+    }
 
     if (!material.specular_highlight_texname.empty())
+    {
         mat.m_mapNs.loadTexture(material.specular_highlight_texname);
+        mat.m_hasMapNs = true;
+    }
 
     if (!material.alpha_texname.empty())
+    {
         mat.m_mapD.loadTexture(material.alpha_texname);
+        mat.m_hasMapD = true;
+    }
 
     if (!material.bump_texname.empty())
+    {
         mat.m_mapBump.loadTexture(material.bump_texname);
+        mat.m_hasMapBump = true;
+    }
 }
 
 // load .obj mesh
