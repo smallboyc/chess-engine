@@ -23,7 +23,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     CXX_EXTENSIONS OFF)
 
 # Ajout des fichiers source
-file(GLOB_RECURSE MY_SOURCES src/*.cpp src/*.hpp)
+file(GLOB_RECURSE MY_SOURCES src/*.cpp src/*.hpp src/**/*.cpp src/**/*.hpp)
 target_sources(${PROJECT_NAME} PRIVATE ${MY_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE src)
 

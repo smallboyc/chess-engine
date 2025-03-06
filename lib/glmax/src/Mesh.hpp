@@ -1,6 +1,4 @@
 #pragma once
-#include <cstddef>
-#include <glm/glm.hpp>
 #include <vector>
 #include "Material.hpp"
 #include "Vertex.hpp"

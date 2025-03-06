@@ -1,6 +1,9 @@
 #pragma once
 #include "Mesh.hpp"
 #include "Shader.hpp"
+#include "buffers/VAO.hpp"
+#include "buffers/VBO.hpp"
+#include "buffers/EBO.hpp"
 
 class PieceManager {
 public:
@@ -17,12 +20,12 @@ public:
 
 private:
     // TODO(smallboyc): Une classe par buffer
-    GLuint m_vao;
-    GLuint m_vbo;
-    GLuint m_ebo;
+    VAO m_vao;
+    VBO m_vbo;
+    EBO m_ebo;
     //
     glm::mat4 m_modelMatrix;
     // Instancing
-    GLuint                 m_instanceVBO;
+    VBO m_instanceVBO;
     std::vector<glm::mat4> m_modelMatrices;
 };

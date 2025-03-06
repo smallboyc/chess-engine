@@ -1,15 +1,11 @@
 #include "PieceManager.hpp"
-#include <iostream>
 #include "Shader.hpp"
 #include "Texture.hpp"
 #include "glm/ext/matrix_transform.hpp"
 
 PieceManager::~PieceManager()
 {
-    glDeleteBuffers(1, &m_vbo);
-    glDeleteBuffers(1, &m_ebo);
-    glDeleteBuffers(1, &m_instanceVBO);
-    glDeleteVertexArrays(1, &m_vao);
+   
 }
 
 PieceManager::PieceManager()
@@ -25,7 +21,7 @@ void PieceManager::init_pieces()
     {
         int       x        = i % 8;
         int       y        = i / 8 ? 6 : 1;
-        glm::vec3 position = glm::vec3(x, 0.0f, y);
+        glm::vec3 position = glm::vec3(-3.5f + x, 0.0f, -3.5f + y);
         m_modelMatrices[i] = glm::translate(glm::mat4(1.0f), position);
     }
 }
@@ -33,21 +29,21 @@ void PieceManager::init_pieces()
 void PieceManager::setup_buffers()
 {
     // Lier et configurer les buffers pour les pions (VBO, EBO)
-    glGenBuffers(1, &m_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glBufferData(GL_ARRAY_BUFFER, m_mesh.getVertices().size() * sizeof(glmax::Vertex), m_mesh.getVertices().data(), GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    m_vbo.init();
+    m_vbo.bind();
+    m_vbo.setData(m_mesh.getVertices().data(), m_mesh.getVertices().size() * sizeof(glmax::Vertex));
+    m_vbo.unbind();
 
-    glGenBuffers(1, &m_ebo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_mesh.getIndices().size() * sizeof(uint32_t), m_mesh.getIndices().data(), GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    m_ebo.init();
+    m_ebo.bind();
+    m_ebo.setData(m_mesh.getIndices().data(), m_mesh.getIndices().size() * sizeof(uint32_t));
+    m_ebo.unbind();
 
     // Lier les matrices d'instance aux attributs de vertex
-    glGenVertexArrays(1, &m_vao);
-    glBindVertexArray(m_vao);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+    m_vao.init();
+    m_vao.bind();
+    m_vbo.bind();
+    m_ebo.bind();
 
     // Attributs de position, normal et texture pour chaque pion
     glEnableVertexAttribArray(0);
@@ -60,9 +56,9 @@ void PieceManager::setup_buffers()
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(glmax::Vertex), (const GLvoid*)offsetof(glmax::Vertex, _tex_coord));
 
     // Lier et configurer le buffer pour les matrices d'instance
-    glGenBuffers(1, &m_instanceVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, m_instanceVBO);
-    glBufferData(GL_ARRAY_BUFFER, m_modelMatrices.size() * sizeof(glm::mat4), m_modelMatrices.data(), GL_STATIC_DRAW);
+    m_instanceVBO.init();
+    m_instanceVBO.bind();
+    m_instanceVBO.setData(m_modelMatrices.data(), m_modelMatrices.size() * sizeof(glm::mat4));
 
     // Lier les matrices d'instance aux attributs de vertex
     glEnableVertexAttribArray(3);
@@ -82,13 +78,13 @@ void PieceManager::setup_buffers()
     glVertexAttribDivisor(6, 1);
 
     // Nettoyage
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    m_instanceVBO.unbind();
+    m_vao.unbind();
 }
 
 void PieceManager::render(glmax::Shader& shader)
 {
-    glBindVertexArray(m_vao);
+    m_vao.bind();
 
     // On boucle sur chaque sous-maille (submesh) pour dessiner ses instances
     for (const glmax::Submesh& submesh : m_mesh.getSubmeshes())
@@ -109,7 +105,7 @@ void PieceManager::render(glmax::Shader& shader)
         material.m_mapKd.unbind();
     }
 
-    glBindVertexArray(0);
+    m_vao.unbind();
 }
 
 void PieceManager::setTransform(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale)
