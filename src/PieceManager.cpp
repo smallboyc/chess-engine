@@ -4,32 +4,49 @@
 #include "Texture.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "utils.hpp"
+
 PieceManager::~PieceManager()
 {
 }
 
-PieceManager::PieceManager(Type type)
+PieceManager::PieceManager(bool is_chessboard)
 {
-    if (type == Type::PAWN)
-    {
-        m_modelMatrices.resize(16);
-        // Pour l'instant on gère juste les 16 pions
-        for (int i = 0; i < m_modelMatrices.size(); i++)
-        {
-            int       x        = i % 8;
-            int       y        = i / 8 ? 6 : 1;
-            glm::vec3 position = world_position({x, y});
-            m_modelMatrices[i] = glm::translate(glm::mat4(1.0f), position);
-        }
-    }
-    else if (type == Type::CHESSBOARD)
+    if (is_chessboard)
     {
         m_modelMatrices.resize(1);
         m_modelMatrices[0] = glm::mat4(1.0f);
     }
+    else // pieces
+    {
+        for (const auto& positions : m_initial_positions)
+        {
+            m_modelMatrices.resize(64);
+            m_pieceColors.resize(64);
+            if (positions.piece_type == Type::PAWN)
+            {
+                for (int i : positions.white_position)
+                {
+                    glm::vec3 position = world_position(get_position(i));
+                    m_modelMatrices[i] = glm::translate(glm::mat4(1.0f), position);
+                    m_pieceColors[i]   = m_white_color;
+                }
+                for (int i : positions.black_position)
+                {
+                    glm::vec3 position = world_position(get_position(i));
+                    m_modelMatrices[i] = glm::translate(glm::mat4(1.0f), position);
+                    m_pieceColors[i]   = m_black_color;
+                }
+            }
+        }
+    }
 }
 
-void PieceManager::setup_buffers()
+void PieceManager::loadMesh(const std::string& path, const std::string& name)
+{
+    m_mesh.load(path, name);
+}
+
+void PieceManager::setupBuffers()
 {
     // Lier et configurer les buffers pour les pions (VBO, EBO)
     m_vbo.init();
@@ -85,6 +102,16 @@ void PieceManager::setup_buffers()
         // Nettoyage
         m_instanceVBO.unbind();
     }
+    if (!m_pieceColors.empty())
+    {
+        m_instanceVBO.init();
+        m_instanceVBO.bind();
+        m_instanceVBO.setData(m_pieceColors.data(), m_pieceColors.size() * sizeof(glm::vec3));
+        glEnableVertexAttribArray(7);
+        glVertexAttribPointer(7, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (const GLvoid*)0);
+        glVertexAttribDivisor(7, 1);
+        m_instanceVBO.unbind();
+    }
     m_vao.unbind();
 }
 
@@ -97,7 +124,7 @@ void PieceManager::render(glmax::Shader& shader)
         const glmax::Material& material = m_mesh.getMaterials().at(submesh.m_material_id);
 
         // Configurer les uniformes pour les propriétés du matériau
-        shader.setUniform3fv("Kd", material.m_Kd);
+        // shader.setUniform3fv("Kd", glm::vec3(0.961, 0.859, 0.635));
         shader.setUniform3fv("Ka", material.m_Ka);
         shader.setUniform3fv("Ks", material.m_Ks);
         shader.setUniform1f("Ns", material.m_Ns);

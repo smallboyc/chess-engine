@@ -10,6 +10,10 @@ enum class Type {
     CHESSBOARD,
 };
 
+inline glm::vec2 get_position(const int index)
+{
+    return {index % 8, index / 8};
+};
 
 inline glm::vec3 world_position(glm::vec2 position)
 {

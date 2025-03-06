@@ -20,7 +20,7 @@ private:
 
 public:
     Mesh() = default;
-    void                         loadMesh(const std::string& objPath, const std::string& mtlPath);
+    void                         load(const std::string& objPath, const std::string& mtlPath);
     std::vector<Vertex>          getVertices() const { return m_vertices; };
     std::vector<unsigned int>    getIndices() const { return m_indices; };
     const std::vector<Material>& getMaterials() const { return m_materials; };

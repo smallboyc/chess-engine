@@ -11,16 +11,17 @@ uniform vec3 viewPos;
 uniform vec3 lightColor;
 //
 uniform vec3 Ka;
-uniform vec3 Kd;
 uniform vec3 Ks;
 uniform float Ns;
 
 uniform bool useTexture;
 uniform sampler2D map_Kd;
 
+in vec3 PieceColor;  // Kd
+
 void main() {
 
-    vec3 diffuseColor = useTexture ? texture(map_Kd, TexCoords).rgb : Kd;
+    vec3 diffuseColor = useTexture ? texture(map_Kd, TexCoords).rgb : PieceColor;  // Kd = couleur de l'instance
 
     // Ambient
     vec3 ambient = Ka * (lightColor * 0.25);

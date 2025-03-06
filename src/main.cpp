@@ -42,15 +42,16 @@ void size_callback(int width, int height)
 
 int main()
 {
+    //
     glmax::Shader shader{};
-    PieceManager  pawn_manager(Type::PAWN);
-    PieceManager  chessboard(Type::CHESSBOARD);
+    PieceManager  pawn_manager(false);
+    PieceManager  chessboard(true);
     auto          window = quick_imgui::WindowWrapper("Quick ImGui", [&]() {
         shader.loadShader("model.vs.glsl", "model.fs.glsl");
-        chessboard.m_mesh.loadMesh("chessboard/chessboard.obj", "chessboard");
-        chessboard.setup_buffers();
-        pawn_manager.m_mesh.loadMesh("pawn/pawn.obj", "pawn");
-        pawn_manager.setup_buffers();
+        chessboard.loadMesh("chessboard/chessboard.obj", "chessboard");
+        chessboard.setupBuffers();
+        pawn_manager.loadMesh("pawn/pawn.obj", "pawn");
+        pawn_manager.setupBuffers();
     });
 
     // callbacks
@@ -76,7 +77,7 @@ int main()
         // Render pieces / board
         shader.use();
         chessboard.render(shader);
-        pawn_manager.setTransform(0, world_position({0, 1}), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
+        // pawn_manager.setTransform(8, world_position({0, 2}), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
         pawn_manager.render(shader);
         ImGui::Begin("Test");
         ImGui::Text("Hello Test");

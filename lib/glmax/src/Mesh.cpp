@@ -58,7 +58,8 @@ void fillMaterial(Material& mat, const tinyobj::material_t& material)
 {
     mat.m_name  = material.name;
     mat.m_Ka    = glm::vec3(material.ambient[0], material.ambient[1], material.ambient[2]);
-    mat.m_Kd    = glm::vec3(material.diffuse[0], material.diffuse[1], material.diffuse[2]);
+    //on détermine la couleur diffuse à la volée dans le jeu d'échec.
+    // mat.m_Kd    = glm::vec3(material.diffuse[0], material.diffuse[1], material.diffuse[2]);
     mat.m_Ks    = glm::vec3(material.specular[0], material.specular[1], material.specular[2]);
     mat.m_Tr    = glm::vec3(material.transmittance[0], material.transmittance[1], material.transmittance[2]);
     mat.m_Le    = glm::vec3(material.emission[0], material.emission[1], material.emission[2]);
@@ -106,7 +107,7 @@ void fillMaterial(Material& mat, const tinyobj::material_t& material)
 }
 
 // load .obj mesh
-void Mesh::loadMesh(const std::string& objPath, const std::string& mtlPath)
+void Mesh::load(const std::string& objPath, const std::string& mtlPath)
 {
     std::string              relativePath = "../../assets/models/";
     tinyobj::ObjReaderConfig reader_config;

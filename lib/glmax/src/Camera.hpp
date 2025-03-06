@@ -6,14 +6,14 @@ namespace glmax {
 
 class Camera {
 private:
-    glm::vec3 _position = glm::vec3(0.0f, 0.0f, 12.0f);
+    glm::vec3 _position = glm::vec3(0.0f, 0.0f, 16.0f);
     glm::vec3 _target   = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 _front    = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 _up       = glm::vec3(0.0f, 1.0f, 0.0f);
 
     float _yaw    = 0.0f;
     float _pitch  = 24.0f;
-    float _radius = 12.0f;
+    float _radius = 16.0f;
 
     float _sensitivity = 0.2f;
     float _last_x      = 0.0f;

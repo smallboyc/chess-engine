@@ -8,7 +8,7 @@ namespace glmax {
 struct Material {
     std::string m_name;
     glm::vec3   m_Ka;        // Ambiante reflectance (ka)
-    glm::vec3   m_Kd;        // Diffuse reflectance (kd)
+    // glm::vec3   m_Kd;        // Diffuse reflectance (kd)
     glm::vec3   m_Ks;        // Specular reflectance (ks)
     glm::vec3   m_Tr;        // Transmission color (tr)
     glm::vec3   m_Le;        // Emissive color (le)
