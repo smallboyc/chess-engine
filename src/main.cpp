@@ -1,4 +1,5 @@
 #include <imgui.h>
+#include <chrono>
 #include <glm/glm.hpp>
 #include <iostream>
 #include <quick_imgui/quick_imgui.hpp>
@@ -44,11 +45,19 @@ void size_callback(int width, int height)
 
 int main()
 {
-    Chessboard _chessboard;
-    //
+    Chessboard    _chessboard;
+    unsigned int  from = 49;
+    unsigned int  to   = 33;
     glmax::Shader shader{};
     PieceManager  piece_manager;
-    // PieceManager  chessboard(true);
+    // Ajoutez ces variables pour suivre le temps et l'état de l'animation
+    bool  isAnimating        = false;
+    float animationStartTime = 0.0f;
+    float animationDuration  = 2.0f; // Durée de l'animation en secondes
+    bool  isFirstTime        = true;
+    // Chronomètre pour mesurer le temps
+    auto start_time = std::chrono::steady_clock::now(); // Démarrer le chronomètre
+
     auto window = quick_imgui::WindowWrapper("Quick ImGui", [&]() {
         shader.loadShader("model.vs.glsl", "model.fs.glsl");
         // All pieces
@@ -80,14 +89,59 @@ int main()
         shader.setUniform3fv("viewPos", Camera.get_position());
         shader.setUniform3fv("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 
-        // Render pieces / board
+        // Calculer le temps écoulé depuis le début du jeu
+        auto                         current_time = std::chrono::steady_clock::now();
+        std::chrono::duration<float> elapsed      = current_time - start_time;
+        float                        elapsed_time = elapsed.count();
+
+        // Démarrez l'animation après 12 secondes
+        if (elapsed_time > 12.0f && !isAnimating && isFirstTime)
+        {
+            isAnimating        = true;
+            animationStartTime = elapsed_time;
+            isFirstTime        = false;
+        }
+
+        // UPDATE PIECE POSITION
+        if (isAnimating)
+        {
+            float t = (elapsed_time - animationStartTime) / animationDuration;
+            if (t >= 1.0f)
+            {
+                t           = 1.0f;
+                isAnimating = false; // Animation terminée
+            }
+
+            glm::vec3 startPos   = world_position(get_position(from));
+            glm::vec3 endPos     = world_position(get_position(to));
+            glm::vec3 currentPos = glm::mix(startPos, endPos, t);
+
+            for (auto& [type, gameObject] : piece_manager.m_gameObjects)
+            {
+                for (auto& [index, instance_index] : gameObject.m_board_instance_relation)
+                {
+                    if (index == from)
+                    {
+                        gameObject.setTransform(instance_index, currentPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+                        if (!isAnimating)
+                        {
+                            gameObject.m_board_instance_relation[to] = instance_index;
+                            gameObject.m_board_instance_relation.erase(from);
+                        }
+                    }
+                }
+            }
+        }
+
+        // RENDER CHESSBOARD AND PIECES
         shader.use();
         piece_manager.m_chessboard.render(shader);
 
-        for (auto& gameObject : piece_manager.m_gameObjects)
+        for (auto& [type, gameObject] : piece_manager.m_gameObjects)
         {
-            gameObject.second.render(shader);
+            gameObject.render(shader);
         }
+
         ImGui::Begin("Test");
         ImGui::Text("Hello Test");
         ImGui::End();

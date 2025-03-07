@@ -24,7 +24,7 @@ struct PiecePositions {
     std::vector<int> white_position;
 };
 
-inline glm::vec2 get_position(const int index)
+inline glm::vec2 get_position(const unsigned int index)
 {
     return {index % 8, index / 8};
 };
