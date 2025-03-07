@@ -1,7 +1,7 @@
 # Blender 4.2.0 MTL File: 'chess.blend'
 # www.blender.org
 
-newmtl Black
+newmtl Yellow
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
 Kd 0.800884 0.483838 0.003014

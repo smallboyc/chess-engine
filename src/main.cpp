@@ -7,6 +7,7 @@
 #include "PieceManager.hpp"
 #include "Shader.hpp"
 #include "glm/ext/matrix_clip_space.hpp"
+#include "glm/ext/matrix_transform.hpp"
 #include "glm/fwd.hpp"
 
 glmax::Camera Camera(true);
@@ -46,14 +47,17 @@ int main()
     Chessboard _chessboard;
     //
     glmax::Shader shader{};
-    PieceManager  pawn_manager(_chessboard.m_board);
+    PieceManager  piece_manager;
     // PieceManager  chessboard(true);
-    auto          window = quick_imgui::WindowWrapper("Quick ImGui", [&]() {
+    auto window = quick_imgui::WindowWrapper("Quick ImGui", [&]() {
         shader.loadShader("model.vs.glsl", "model.fs.glsl");
-        // chessboard.loadMesh("chessboard/chessboard.obj", "chessboard");
-        // chessboard.setupBuffers();
-        pawn_manager.loadMesh("pawn/pawn.obj", "pawn");
-        pawn_manager.setupBuffers();
+        // All pieces
+        piece_manager.init(_chessboard.m_board);
+        piece_manager.loadAllMesh();
+        // Chessboard
+        piece_manager.m_chessboard.m_modelMatrices.push_back(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
+        piece_manager.m_chessboard.loadMesh("chessboard/chessboard.obj", "chessboard");
+        piece_manager.m_chessboard.setupBuffers();
     });
 
     // callbacks
@@ -78,9 +82,12 @@ int main()
 
         // Render pieces / board
         shader.use();
-        // chessboard.render(shader);
-        pawn_manager.setTransform(8, world_position({0, 2}), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f));
-        pawn_manager.render(shader);
+        piece_manager.m_chessboard.render(shader);
+
+        for (auto& gameObject : piece_manager.m_gameObjects)
+        {
+            gameObject.second.render(shader);
+        }
         ImGui::Begin("Test");
         ImGui::Text("Hello Test");
         ImGui::End();
