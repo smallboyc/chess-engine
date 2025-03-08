@@ -9,9 +9,10 @@ public:
     Piece(const Piece&)            = delete;
     Piece& operator=(const Piece&) = delete;
     Piece(Piece&&)                 = default;
-    Piece& operator=(Piece&&)      = default;
+    Piece&    operator=(Piece&&)   = default;
     glm::vec3 getColor() const { return m_color == Color::White ? glm::vec3(0.961, 0.859, 0.635) : glm::vec3(0.0f, 0.0f, 0.0f); };
-    Type  get_type() const { return m_type; };
+    Type      get_type() const { return m_type; };
+
 private:
     Type  m_type;
     Color m_color;
