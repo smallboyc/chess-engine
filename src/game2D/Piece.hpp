@@ -1,5 +1,28 @@
 #pragma once
-#include "utils.hpp"
+#include <glm/glm.hpp>
+#include <vector>
+
+enum class Color {
+    White,
+    Black,
+    None,
+};
+
+enum class Type {
+    King,
+    Queen,
+    Bishop,
+    Knight,
+    Rook,
+    Pawn,
+    None,
+};
+
+struct PiecePositions {
+    Type             piece_type;
+    std::vector<int> black_position;
+    std::vector<int> white_position;
+};
 
 class Piece {
 public:
@@ -10,7 +33,7 @@ public:
     Piece& operator=(const Piece&) = delete;
     Piece(Piece&&)                 = default;
     Piece&    operator=(Piece&&)   = default;
-    glm::vec3 getColor() const { return m_color == Color::White ? glm::vec3(0.961, 0.859, 0.635) : glm::vec3(0.0f, 0.0f, 0.0f); };
+    glm::vec3 getColor() const { return m_color == Color::White ? glm::vec3(0.961, 0.859, 0.635) : glm::vec3(0.086f, 0.086f, 0.129f); };
     Type      get_type() const { return m_type; };
 
 private:

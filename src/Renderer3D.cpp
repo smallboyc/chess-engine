@@ -33,7 +33,7 @@ void Renderer3D::run()
         glClearColor(0.847f, 0.82f, 0.929f, 1.f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
-        glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(1280) / static_cast<float>(720), 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(window_width) / static_cast<float>(window_height), 0.1f, 100.0f);
         shader.setUniformMatrix4fv("view", Camera.get_view_matrix());
         shader.setUniformMatrix4fv("projection", projection);
 
@@ -45,22 +45,15 @@ void Renderer3D::run()
         std::chrono::duration<float> elapsed      = current_time - start_time;
         float                        elapsed_time = elapsed.count();
 
-        if (elapsed_time > 12.0f && !isAnimating && isFirstTime)
+        if (elapsed_time > 6.0f && !isAnimating)
         {
             isAnimating        = true;
             animationStartTime = elapsed_time;
-            isFirstTime        = false;
         }
-
-        updatePiecePosition(elapsed_time);
-
-        shader.use();
-        piece_manager.m_chessboard.render(shader);
-
-        for (auto& [type, gameObject] : piece_manager.m_gameObjects)
-        {
-            gameObject.render(shader);
-        }
+        // UPDATE
+        update(elapsed_time);
+        // RENDER
+        render();
 
         ImGui::Begin("Test");
         ImGui::Text("Hello Test");
@@ -68,35 +61,16 @@ void Renderer3D::run()
     });
 }
 
-void Renderer3D::updatePiecePosition(float elapsedTime)
+void Renderer3D::update(float elapsedTime)
 {
     if (isAnimating)
     {
-        float t = (elapsedTime - animationStartTime) / animationDuration;
-        if (t >= 1.0f)
-        {
-            t           = 1.0f;
-            isAnimating = false;
-        }
-
-        glm::vec3 startPos   = world_position(get_position(from));
-        glm::vec3 endPos     = world_position(get_position(to));
-        glm::vec3 currentPos = glm::mix(startPos, endPos, t);
-
-        for (auto& [type, gameObject] : piece_manager.m_gameObjects)
-        {
-            for (auto& [index, instance_index] : gameObject.m_board_instance_relation)
-            {
-                if (index == from)
-                {
-                    gameObject.setTransform(instance_index, currentPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-                    if (!isAnimating)
-                    {
-                        gameObject.m_board_instance_relation[to] = instance_index;
-                        gameObject.m_board_instance_relation.erase(from);
-                    }
-                }
-            }
-        }
+        game_object_manager.movePiece(_chessboard.m_board, from, to, elapsedTime, animationStartTime, isAnimating);
     }
+}
+
+void Renderer3D::render()
+{
+    shader.use();
+    game_object_manager.renderGameObjects(shader);
 }

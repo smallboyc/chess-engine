@@ -2,7 +2,7 @@
 
 int main()
 {
-    Renderer3D renderer(1000, 700);
+    Renderer3D renderer(1280, 720);
     renderer.run();
     return 0;
 }
