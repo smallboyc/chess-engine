@@ -146,3 +146,20 @@ void GameObject::loadMesh(const std::string& path, const std::string& name)
 {
     m_mesh.load(path, name);
 }
+
+void GameObject::clearInstancingBuffers()
+{
+    m_modelMatrices.clear();
+    m_pieceColors.clear();
+    // m_board_instance_relation.clear();
+}
+
+void GameObject::pushMatrix(const glm::vec3& position)
+{
+    m_modelMatrices.push_back(glm::translate(glm::mat4(1.0f), position));
+}
+
+void GameObject::pushColor(const glm::vec3& color)
+{
+    m_pieceColors.push_back(color);
+}

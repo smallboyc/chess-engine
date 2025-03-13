@@ -1,14 +1,8 @@
 #include "GameObjectManager.hpp"
 #include <vector>
 #include "glm/ext/matrix_transform.hpp"
+#include "glm/fwd.hpp"
 #include "utils.hpp"
-
-void clearGameObject(GameObject& gameObject)
-{
-    gameObject.m_modelMatrices.clear();
-    gameObject.m_pieceColors.clear();
-    gameObject.m_board_instance_relation.clear();
-}
 
 void GameObjectManager::updatePiecesData()
 {
@@ -27,7 +21,7 @@ void GameObjectManager::updatePiecesPositions(std::array<std::unique_ptr<Piece>,
     {
         for (auto& [type, piece] : m_pieces)
         {
-            clearGameObject(piece);
+            piece.clearInstancingBuffers();
         }
     }
     // On met à jour les gameObject en fonction du board
@@ -38,11 +32,12 @@ void GameObjectManager::updatePiecesPositions(std::array<std::unique_ptr<Piece>,
         {
             Type      pieceType = chessboard[i]->get_type();
             glm::vec3 position  = world_position(get_position(i));
-
-            m_pieces[pieceType].m_modelMatrices.push_back(glm::translate(glm::mat4(1.0f), position));
-            m_pieces[pieceType].m_pieceColors.push_back(chessboard[i]->getColor());
-            // keep track of board index with model matrix index
-            m_pieces[pieceType].m_board_instance_relation[i] = m_pieces[pieceType].m_modelMatrices.size() - 1;
+            glm::vec3 color     = chessboard[i]->getColor();
+            //
+            m_pieces[pieceType].pushMatrix(position);
+            m_pieces[pieceType].pushColor(color);
+            // WIP ? keep track of board index with model matrix index
+            // m_pieces[pieceType].m_board_instance_relation[i] = m_pieces[pieceType].m_modelMatrices.size() - 1;
         }
         // Si la case est vide, on vérifie si pour chaque gameObject, i est dans m_board_instance_relation, dans ce cas on retire de m_board_instance_relation et de m_modelMatrices.
     }
@@ -70,49 +65,51 @@ void GameObjectManager::loadAllPieces()
 
 void GameObjectManager::loadChessboard()
 {
-    m_chessboard.m_modelMatrices.push_back(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
+    glm::vec3 centerPos{glm::vec3(0.0f, 0.0f, 0.0f)};
+    m_chessboard.pushMatrix(centerPos);
     m_chessboard.loadMesh("chessboard/chessboard.obj", "chessboard");
     m_chessboard.setupBuffers();
 }
 
-void GameObjectManager::movePiece(std::array<std::unique_ptr<Piece>, 64>& chessboard, unsigned int from, unsigned int to, float elapsedTime, float animationStartTime, bool isAnimating)
-{
-    float t = (elapsedTime - animationStartTime) / animationDuration;
-    if (t >= 1.0f)
-    {
-        t           = 1.0f;
-        isAnimating = false;
-    }
-    // update the piece position
-    // if the piece is a knight, we need to elevate it
-    if (chessboard[from] && chessboard[from]->get_type() == Type::Knight)
-    {
-        if (t < 0.5f)
-            elevation = t;
-        else
-            elevation = 1.0f - t;
-    }
+// This method is about to change (from & to logic not ok)
+//  void GameObjectManager::movePiece(std::array<std::unique_ptr<Piece>, 64>& chessboard, unsigned int from, unsigned int to, float elapsedTime, float animationStartTime, bool isAnimating)
+//  {
+//      float t = (elapsedTime - animationStartTime) / animationDuration;
+//      if (t >= 1.0f)
+//      {
+//          t           = 1.0f;
+//          isAnimating = false;
+//      }
+//      // update the piece position
+//      // if the piece is a knight, we need to elevate it
+//      if (chessboard[from] && chessboard[from]->get_type() == Type::Knight)
+//      {
+//          if (t < 0.5f)
+//              elevation = t;
+//          else
+//              elevation = 1.0f - t;
+//      }
 
-    glm::vec3 startPos   = world_position(get_position(from), elevation);
-    glm::vec3 endPos     = world_position(get_position(to), elevation);
-    glm::vec3 currentPos = glm::mix(startPos, endPos, t);
+//     glm::vec3 startPos   = world_position(get_position(from), elevation);
+//     glm::vec3 endPos     = world_position(get_position(to), elevation);
+//     glm::vec3 currentPos = glm::mix(startPos, endPos, t);
 
-    for (auto& [type, piece] : m_pieces)
-    {
-        for (auto& [index, instance_index] : piece.m_board_instance_relation)
-        {
-            if (index == from)
-            {
-                piece.setTransform(instance_index, currentPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-                if (!isAnimating)
-                {
-                    piece.m_board_instance_relation[to] = instance_index;
-                    piece.m_board_instance_relation.erase(from);
-                }
-            }
-        }
-    }
-}
+//     for (auto& [type, piece] : m_pieces)
+//     {
+//         for (auto& [index, instance_index] : piece.m_board_instance_relation)
+//         {
+//             if (index == from)
+//             {
+//                 piece.setTransform(instance_index, currentPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+//                 if (!isAnimating)
+//                 {
+//                     piece.m_board_instance_relation[to] = instance_index;
+//                     piece.m_board_instance_relation.erase(from);
+//                 }
+//             }
+//         }
+//     }
+// }
 
 void GameObjectManager::renderGameObjects(glmax::Shader& shader)
 {

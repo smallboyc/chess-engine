@@ -69,10 +69,10 @@ void Renderer3D::run()
 
 void Renderer3D::update(float elapsedTime)
 {
-    if (isAnimating)
-    {
-        game_object_manager.movePiece(_chessboard.m_board, from, to, elapsedTime, animationStartTime, isAnimating);
-    }
+    // if (isAnimating)
+    // {
+    //     game_object_manager.movePiece(_chessboard.m_board, from, to, elapsedTime, animationStartTime, isAnimating);
+    // }
 }
 
 void Renderer3D::render(float elapsedTime)
