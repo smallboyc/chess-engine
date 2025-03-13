@@ -47,9 +47,8 @@ void GameObject::setTransform(const unsigned int index, const glm::vec3& positio
     glm::mat4 rotationZ    = glm::rotate(glm::mat4(1.0f), rotation.z, glm::vec3(0, 0, 1));
     glm::mat4 scaling      = glm::scale(glm::mat4(1.0f), scale);
     m_modelMatrices[index] = translation * rotationX * rotationY * rotationZ * scaling;
-    m_instanceVBO.bind();
-    m_instanceVBO.setData(m_modelMatrices.data(), m_modelMatrices.size() * sizeof(glm::mat4));
-    m_instanceVBO.unbind();
+    //
+    updateMatInstancingBuffer();
 }
 
 void GameObject::setupBuffers()
@@ -118,6 +117,28 @@ void GameObject::setupBuffers()
         glVertexAttribDivisor(7, 1);
         m_colorVBO.unbind();
     }
+    m_vao.unbind();
+}
+
+void GameObject::updateMatInstancingBuffer()
+{
+    m_vao.bind();
+    //
+    m_instanceVBO.bind();
+    m_instanceVBO.setData(m_modelMatrices.data(), m_modelMatrices.size() * sizeof(glm::mat4));
+    m_instanceVBO.unbind();
+    //
+    m_vao.unbind();
+}
+
+void GameObject::updateColorInstancingBuffer()
+{
+    m_vao.bind();
+    //
+    m_colorVBO.bind();
+    m_colorVBO.setData(m_pieceColors.data(), m_pieceColors.size() * sizeof(glm::vec3));
+    m_colorVBO.unbind();
+    //
     m_vao.unbind();
 }
 

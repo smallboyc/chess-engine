@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <vector>
+#include "glm/fwd.hpp"
 
 enum class Color {
     White,
@@ -23,6 +24,33 @@ struct PiecePositions {
     std::vector<int> black_position;
     std::vector<int> white_position;
 };
+
+
+
+inline std::string getPieceType(const Type& type)
+{
+    if (type == Type::Pawn)
+        return "Pawn";
+    if (type == Type::Knight)
+        return "Knight";
+    if (type == Type::Bishop)
+        return "Bishop";
+    if (type == Type::Rook)
+        return "Rook";
+    if (type == Type::Queen)
+        return "Queen";
+    if (type == Type::King)
+        return "King";
+    return "None";
+}
+
+inline std::string getColor(const glm::vec3& color)
+{
+    if (color == glm::vec3(0.961, 0.859, 0.635))
+        return "White";
+    if (color == glm::vec3(0.086f, 0.086f, 0.129f))
+        return "Black";
+}
 
 class Piece {
 public:

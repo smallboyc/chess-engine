@@ -1,9 +1,15 @@
 #include "Renderer3D.hpp"
+#include <GLFW/glfw3.h>
+#include <cmath>
 #include "glm/ext/matrix_clip_space.hpp"
 
 void Renderer3D::initCallbacks()
 {
     window.key_callback = [&](int key, int scancode, int action, int mods) {
+        if (key == GLFW_KEY_D && action == GLFW_PRESS)
+        {
+            isPieceDeleted = true;
+        }
         if (!Camera.is_track_ball())
             Camera.process_input(key, action);
     };
@@ -53,7 +59,7 @@ void Renderer3D::run()
         // UPDATE
         update(elapsed_time);
         // RENDER
-        render();
+        render(elapsed_time);
 
         ImGui::Begin("Test");
         ImGui::Text("Hello Test");
@@ -69,8 +75,18 @@ void Renderer3D::update(float elapsedTime)
     }
 }
 
-void Renderer3D::render()
+void Renderer3D::render(float elapsedTime)
 {
     shader.use();
+    if (isPieceDeleted)
+    {
+        std::cout << "Piece deleted !"
+                  << "\n";
+        _chessboard.m_board[0].reset();
+        game_object_manager.updatePiecesPositions(_chessboard.m_board);
+        game_object_manager.updatePiecesData();
+        isPieceDeleted = false;
+    }
+    game_object_manager.updatePiecesPositions(_chessboard.m_board);
     game_object_manager.renderGameObjects(shader);
 }

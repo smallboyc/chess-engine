@@ -12,17 +12,8 @@
 56 57 58 59 60 61 62 63
 */
 
-Chessboard::Chessboard()
+Chessboard::Chessboard(std::array<PiecePositions, 6> initial_positions)
 {
-    std::array<PiecePositions, 6> initial_positions = {
-        PiecePositions{Type::Pawn, {8, 9, 10, 11, 12, 13, 14, 15}, {48, 49, 51, 50, 52, 53, 54, 55}},
-        PiecePositions{Type::Rook, {0, 7}, {56, 63}},
-        PiecePositions{Type::Knight, {1, 6}, {57, 62}},
-        PiecePositions{Type::Bishop, {2, 5}, {58, 61}},
-        PiecePositions{Type::Queen, {3}, {59}},
-        PiecePositions{Type::King, {4}, {60}}
-    };
-
     for (const PiecePositions& piece_positions : initial_positions)
     {
         set_piece_on_board(piece_positions, Color::White);

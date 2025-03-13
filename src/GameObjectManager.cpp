@@ -3,10 +3,37 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "utils.hpp"
 
-void GameObjectManager::initPiecesPositions(std::array<std::unique_ptr<Piece>, 64>& chessboard)
+void clearGameObject(GameObject& gameObject)
 {
+    gameObject.m_modelMatrices.clear();
+    gameObject.m_pieceColors.clear();
+    gameObject.m_board_instance_relation.clear();
+}
+
+void GameObjectManager::updatePiecesData()
+{
+    for (auto& [type, piece] : m_pieces)
+    {
+        piece.updateMatInstancingBuffer();
+        piece.updateColorInstancingBuffer();
+    }
+}
+
+// A chaque frame, on met à jour l'affichage de notre jeu 3D, en analysant le board envoyé par le jeu 2D.
+void GameObjectManager::updatePiecesPositions(std::array<std::unique_ptr<Piece>, 64>& chessboard)
+{
+    // On vide toutes les positions des pieces
+    if (!m_pieces.empty())
+    {
+        for (auto& [type, piece] : m_pieces)
+        {
+            clearGameObject(piece);
+        }
+    }
+    // On met à jour les gameObject en fonction du board
     for (int i = 0; i < chessboard.size(); i++)
     {
+        // Si la case possède une pièce, on ajoute la position de la piece et sa couleur à sa famille de piece (GameObject)
         if (chessboard[i])
         {
             Type      pieceType = chessboard[i]->get_type();
@@ -17,6 +44,7 @@ void GameObjectManager::initPiecesPositions(std::array<std::unique_ptr<Piece>, 6
             // keep track of board index with model matrix index
             m_pieces[pieceType].m_board_instance_relation[i] = m_pieces[pieceType].m_modelMatrices.size() - 1;
         }
+        // Si la case est vide, on vérifie si pour chaque gameObject, i est dans m_board_instance_relation, dans ce cas on retire de m_board_instance_relation et de m_modelMatrices.
     }
 }
 
