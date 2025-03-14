@@ -1,8 +1,7 @@
 #include "GameObjectManager.hpp"
-#include <vector>
-#include "glm/ext/matrix_transform.hpp"
 #include "glm/fwd.hpp"
 #include "utils.hpp"
+
 
 void GameObjectManager::updatePiecesData()
 {
@@ -31,8 +30,8 @@ void GameObjectManager::updatePiecesPositions(std::array<std::unique_ptr<Piece>,
         if (chessboard[i])
         {
             Type      pieceType = chessboard[i]->get_type();
-            glm::vec3 position  = world_position(get_position(i));
-            glm::vec3 color     = chessboard[i]->getColor();
+            glm::vec3 position  = Renderer3D::world_position(Renderer3D::get_position(i));
+            glm::vec3 color     = chessboard[i]->get_vec_color();
             //
             m_pieces[pieceType].pushMatrix(position);
             m_pieces[pieceType].pushColor(color);

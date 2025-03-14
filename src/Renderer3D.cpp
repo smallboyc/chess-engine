@@ -1,7 +1,5 @@
 #include "Renderer3D.hpp"
 #include <GLFW/glfw3.h>
-#include <cmath>
-#include <iostream>
 #include "glm/ext/matrix_clip_space.hpp"
 
 void Renderer3D::window_size_callback(int width, int height)
@@ -10,26 +8,26 @@ void Renderer3D::window_size_callback(int width, int height)
     window_height = height;
 }
 
-void Renderer3D::delete_piece_callback(int key, int action)
+void Renderer3D::toggle_active_camera_callback(int key, int action)
 {
-    if (key == GLFW_KEY_D && action == GLFW_PRESS)
+    if (key == GLFW_KEY_L && action == GLFW_PRESS)
     {
-        isPieceDeleted = true;
+        m_camera.toggle_lock();
     }
 }
 
-void Renderer3D::init()
+void Renderer3D::init(std::array<std::unique_ptr<Piece>, 64>& chessboard)
 {
     // init shader
     m_shader.loadShader("model.vs.glsl", "model.fs.glsl");
     // init all pieces
-    m_gameObjectManager.updatePiecesPositions(_chessboard.m_board);
+    m_gameObjectManager.updatePiecesPositions(chessboard);
     m_gameObjectManager.loadAllPieces();
     // init chessboard
     m_gameObjectManager.loadChessboard();
 }
 
-void Renderer3D::run()
+void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard)
 {
     glClearColor(0.847f, 0.82f, 0.929f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -54,11 +52,7 @@ void Renderer3D::run()
     // UPDATE
     update(elapsed_time);
     // RENDER
-    render(elapsed_time);
-
-    ImGui::Begin("Test");
-    ImGui::Text("Hello Test");
-    ImGui::End();
+    render(elapsed_time, chessboard);
 }
 
 void Renderer3D::update(float elapsedTime)
@@ -69,18 +63,12 @@ void Renderer3D::update(float elapsedTime)
     // }
 }
 
-void Renderer3D::render(float elapsedTime)
+void Renderer3D::render(float elapsedTime, std::array<std::unique_ptr<Piece>, 64>& chessboard)
 {
     m_shader.use();
-    if (isPieceDeleted)
-    {
-        std::cout << "Piece deleted !"
-                  << "\n";
-        _chessboard.m_board[0].reset();
-        m_gameObjectManager.updatePiecesPositions(_chessboard.m_board);
-        m_gameObjectManager.updatePiecesData();
-        isPieceDeleted = false;
-    }
-    m_gameObjectManager.updatePiecesPositions(_chessboard.m_board);
+    // It's good but maybe just update Piece when the chessboard changes and not every frame?
+    m_gameObjectManager.updatePiecesPositions(chessboard);
+    m_gameObjectManager.updatePiecesData();
+    //
     m_gameObjectManager.renderGameObjects(m_shader);
 }

@@ -18,8 +18,7 @@ public:
 
 private:
     std::unordered_map<Type, GameObject> m_pieces;
-    GameObject m_chessboard;
+    GameObject                           m_chessboard;
     float                                animationDuration{2.0f};
     float                                elevation{0.0f};
 };
-

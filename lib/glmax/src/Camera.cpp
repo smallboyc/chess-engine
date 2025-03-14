@@ -47,8 +47,8 @@ void Camera::process_scroll(double yoffset)
     _radius -= yoffset * 0.1f;
     if (_radius < 1.0f)
         _radius = 1.0f;
-    if (_radius > 16.0f)
-        _radius = 16.0f;
+    if (_radius > 32.0f)
+        _radius = 32.0f;
 }
 
 void Camera::process_input(int key, int action)
@@ -74,19 +74,19 @@ void Camera::process_input(int key, int action)
 // callbacks
 void Camera::free_move_callback(int key, int action)
 {
-    if (!is_track_ball())
+    if (!is_track_ball() && !_isLocked)
         process_input(key, action);
 }
 
 void Camera::zoom_callback(double yoffset)
 {
-    if (is_track_ball())
+    if (is_track_ball() && !_isLocked)
         process_scroll(yoffset);
 }
 
 void Camera::track_ball_move_callback(double xpos, double ypos)
 {
-    if (is_track_ball())
+    if (is_track_ball() && !_isLocked)
         process_mouse_movement(xpos, ypos);
 }
 } // namespace glmax

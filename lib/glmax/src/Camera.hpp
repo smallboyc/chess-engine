@@ -21,6 +21,7 @@ private:
 
     bool _first_mouse = true;
     bool _is_track_ball;
+    bool _isLocked = false;
 
 public:
     Camera(bool is_track_ball)
@@ -36,6 +37,8 @@ public:
     void      set_front(const glm::vec3& front) { _front = front; }
     void      set_up(const glm::vec3& up) { _up = up; }
     void      set_sensitivity(float sensitivity) { _sensitivity = sensitivity; }
+    //
+    void toggle_lock() { _isLocked = !_isLocked; };
     //
     bool is_track_ball() const { return _is_track_ball; };
     //

@@ -1,56 +1,17 @@
 #pragma once
+#include <imgui.h>
 #include <glm/glm.hpp>
+#include <string>
 #include <vector>
-#include "glm/fwd.hpp"
-
-enum class Color {
-    White,
-    Black,
-    None,
-};
-
-enum class Type {
-    King,
-    Queen,
-    Bishop,
-    Knight,
-    Rook,
-    Pawn,
-    None,
-};
+#include "PieceMove.hpp"
+#include "Types.hpp"
+#include "utils.hpp"
 
 struct PiecePositions {
     Type             piece_type;
     std::vector<int> black_position;
     std::vector<int> white_position;
 };
-
-
-
-inline std::string getPieceType(const Type& type)
-{
-    if (type == Type::Pawn)
-        return "Pawn";
-    if (type == Type::Knight)
-        return "Knight";
-    if (type == Type::Bishop)
-        return "Bishop";
-    if (type == Type::Rook)
-        return "Rook";
-    if (type == Type::Queen)
-        return "Queen";
-    if (type == Type::King)
-        return "King";
-    return "None";
-}
-
-inline std::string getColor(const glm::vec3& color)
-{
-    if (color == glm::vec3(0.961, 0.859, 0.635))
-        return "White";
-    if (color == glm::vec3(0.086f, 0.086f, 0.129f))
-        return "Black";
-}
 
 class Piece {
 public:
@@ -60,47 +21,37 @@ public:
     Piece(const Piece&)            = delete;
     Piece& operator=(const Piece&) = delete;
     Piece(Piece&&)                 = default;
-    Piece&    operator=(Piece&&)   = default;
-    glm::vec3 getColor() const { return m_color == Color::White ? glm::vec3(0.961, 0.859, 0.635) : glm::vec3(0.086f, 0.086f, 0.129f); };
-    Type      get_type() const { return m_type; };
+    Piece& operator=(Piece&&)      = default;
+
+    Type        get_type() const { return m_type; };
+    glm::vec3   get_vec_color() const { return m_color == Color::White ? glm::vec3(0.961, 0.859, 0.635) : glm::vec3(0.086f, 0.086f, 0.129f); };
+    Color       get_color() const { return m_color; };
+    Texture     get_texture(const Textures& textures) const;
+    std::string get_path() const;
+    //
+    int               direction() const;
+    std::vector<int>& legal_moves() { return m_legal_moves; };
+    bool              player_move_is_legal(int choice);
+    bool              has_moved() const { return m_has_moved; }
+    void              set_has_moved(bool has_moved) { m_has_moved = has_moved; };
+    void              draw_scopes(int cell_index, Turn& turn, const std::array<std::unique_ptr<Piece>, 64>& board);
+    void              set_capture(bool capture) { m_has_captured = capture; };
+    bool              has_captured() const { return m_has_captured; };
+    //
+    virtual bool is_vulnerable_to_en_passant() const { return false; };
+    virtual void set_active_double_move(){};
+    virtual void bind_rooks(std::vector<int>& rooks){};
+    virtual void set_legal_moves(int from, const std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn) = 0;
+    virtual void move_piece(int from, int to, std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn);
 
 private:
-    Type  m_type;
-    Color m_color;
+    Type             m_type;
+    Color            m_color;
+    std::vector<int> m_legal_moves;
+    bool             m_has_captured{};
+    bool             m_has_moved{};
 };
 
-class Pawn : public Piece {
-public:
-    explicit Pawn(const Color color)
-        : Piece(Type::Pawn, color) {}
-};
-
-class Knight : public Piece {
-public:
-    explicit Knight(const Color color)
-        : Piece(Type::Knight, color) {}
-};
-
-class Bishop : public Piece {
-public:
-    explicit Bishop(const Color color)
-        : Piece(Type::Bishop, color) {}
-};
-
-class Rook : public Piece {
-public:
-    explicit Rook(const Color color)
-        : Piece(Type::Rook, color) {}
-};
-
-class Queen : public Piece {
-public:
-    explicit Queen(const Color color)
-        : Piece(Type::Queen, color) {}
-};
-
-class King : public Piece {
-public:
-    explicit King(const Color color)
-        : Piece(Type::King, color) {}
-};
+bool is_empty_cell(int index, const std::array<std::unique_ptr<Piece>, 64>& board);
+bool is_enemy_targeted(int index, Turn& turn, const std::array<std::unique_ptr<Piece>, 64>& board);
+void add_moves_in_direction(int from, Move move, std::vector<int>& legal_moves, Turn& turn, const std::array<std::unique_ptr<Piece>, 64>& board);
