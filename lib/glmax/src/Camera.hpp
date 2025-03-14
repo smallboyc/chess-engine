@@ -38,6 +38,11 @@ public:
     void      set_sensitivity(float sensitivity) { _sensitivity = sensitivity; }
     //
     bool is_track_ball() const { return _is_track_ball; };
+    //
+    // callbacks
+    void free_move_callback(int key, int action);
+    void zoom_callback(double yoffset);
+    void track_ball_move_callback(double xpos, double ypos);
 };
 
 } // namespace glmax

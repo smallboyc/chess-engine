@@ -1,7 +1,6 @@
 #pragma once
 #include <chrono>
 #include <glm/glm.hpp>
-#include <iostream>
 #include <quick_imgui/quick_imgui.hpp>
 #include "Camera.hpp"
 #include "GameObjectManager.hpp"
@@ -12,22 +11,12 @@
 class Renderer3D {
 public:
     Renderer3D(int width, int height)
-        : window_width(width), window_height(height), window("Quick ImGui", [&]() {
-            // init shader
-            shader.loadShader("model.vs.glsl", "model.fs.glsl");
-            // init all pieces
-            game_object_manager.updatePiecesPositions(_chessboard.m_board);
-            game_object_manager.loadAllPieces();
-            // init chessboard
-            game_object_manager.loadChessboard();
-        })
-        , start_time(std::chrono::steady_clock::now())
-    {
-        initCallbacks();
-    };
-
-    void initCallbacks();
-    void run();
+        : window_width(width), window_height(height), start_time(std::chrono::steady_clock::now()){};
+    glmax::Camera& useCamera() { return m_camera; };
+    void           window_size_callback(int width, int height);
+    void           delete_piece_callback(int key, int action);
+    void           init();
+    void           run();
 
 private:
     std::array<PiecePositions, 6> initial_positions = {
@@ -38,17 +27,16 @@ private:
         PiecePositions{Type::Queen, {3}, {59}},
         PiecePositions{Type::King, {4}, {60}}
     };
-    void                       update(float elapsedTime);
-    void                       render(float elapsedTime);
-    glmax::Camera              Camera{true};
-    glmax::Shader              shader{};
-    Chessboard                 _chessboard{initial_positions};
-    GameObjectManager          game_object_manager;
-    quick_imgui::WindowWrapper window;
-    int                        window_width;
-    int                        window_height;
-    bool                       isAnimating{};
-    float                      animationStartTime{0.0f};
+    void              update(float elapsedTime);
+    void              render(float elapsedTime);
+    glmax::Camera     m_camera{true};
+    glmax::Shader     m_shader{};
+    Chessboard        _chessboard{initial_positions}; //temporary (test)
+    GameObjectManager m_gameObjectManager;
+    int               window_width;
+    int               window_height;
+    bool              isAnimating{};
+    float             animationStartTime{0.0f};
     // Animation test with knight positions
     unsigned int                          from = 1;
     unsigned int                          to   = 17;

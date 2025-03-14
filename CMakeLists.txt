@@ -28,18 +28,17 @@ target_sources(${PROJECT_NAME} PRIVATE ${MY_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE src)
 
 # Ajout de la bibliothèque quick_imgui
-# add_subdirectory(lib/quick_imgui)
-# target_link_libraries(${PROJECT_NAME} PRIVATE quick_imgui::quick_imgui)
-
-include(FetchContent)
-FetchContent_Declare(
-    quick_imgui
-    GIT_REPOSITORY https://github.com/dsmtE/quick_imgui
-    GIT_TAG 462db5f449a38194e263fe3881e0348d204ea7f2
-)
-FetchContent_MakeAvailable(quick_imgui)
+add_subdirectory(lib/quick_imgui)
 target_link_libraries(${PROJECT_NAME} PRIVATE quick_imgui::quick_imgui)
 
+# include(FetchContent)
+# FetchContent_Declare(
+#     quick_imgui
+#     GIT_REPOSITORY https://github.com/dsmtE/quick_imgui
+#     GIT_TAG 462db5f449a38194e263fe3881e0348d204ea7f2
+# )
+# FetchContent_MakeAvailable(quick_imgui)
+# target_link_libraries(${PROJECT_NAME} PRIVATE quick_imgui::quick_imgui)
 
 # Ajout de la bibliothèque glmax
 add_subdirectory(lib/glmax)

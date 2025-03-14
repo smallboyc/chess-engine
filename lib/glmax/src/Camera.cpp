@@ -70,4 +70,23 @@ void Camera::process_input(int key, int action)
         _position += glm::normalize(glm::cross(_front, _up)) * _sensitivity;
     }
 }
+
+// callbacks
+void Camera::free_move_callback(int key, int action)
+{
+    if (!is_track_ball())
+        process_input(key, action);
+}
+
+void Camera::zoom_callback(double yoffset)
+{
+    if (is_track_ball())
+        process_scroll(yoffset);
+}
+
+void Camera::track_ball_move_callback(double xpos, double ypos)
+{
+    if (is_track_ball())
+        process_mouse_movement(xpos, ypos);
+}
 } // namespace glmax
