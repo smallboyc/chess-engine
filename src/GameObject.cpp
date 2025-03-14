@@ -142,6 +142,11 @@ void GameObject::updateColorInstancingBuffer()
     m_vao.unbind();
 }
 
+void GameObject::updateBoardRelations(int i)
+{
+    m_board_instance_relation[i] = m_modelMatrices.size() - 1;
+}
+
 void GameObject::loadMesh(const std::string& path, const std::string& name)
 {
     m_mesh.load(path, name);
@@ -151,7 +156,7 @@ void GameObject::clearInstancingBuffers()
 {
     m_modelMatrices.clear();
     m_pieceColors.clear();
-    // m_board_instance_relation.clear();
+    m_board_instance_relation.clear();
 }
 
 void GameObject::pushMatrix(const glm::vec3& position)

@@ -1,5 +1,6 @@
 #include "Renderer3D.hpp"
 #include <GLFW/glfw3.h>
+#include <iostream>
 #include "glm/ext/matrix_clip_space.hpp"
 
 void Renderer3D::window_size_callback(int width, int height)
@@ -27,7 +28,7 @@ void Renderer3D::init(std::array<std::unique_ptr<Piece>, 64>& chessboard)
     m_gameObjectManager.loadChessboard();
 }
 
-void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard)
+void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::optional<MoveProcessing>& move_processing)
 {
     glClearColor(0.847f, 0.82f, 0.929f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -44,31 +45,35 @@ void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard)
     std::chrono::duration<float> elapsed      = current_time - start_time;
     float                        elapsed_time = elapsed.count();
 
-    if (elapsed_time > 6.0f && !isAnimating)
+    if (!isAnimating)
     {
         isAnimating        = true;
         animationStartTime = elapsed_time;
     }
-    // UPDATE
-    update(elapsed_time);
-    // RENDER
-    render(elapsed_time, chessboard);
-}
-
-void Renderer3D::update(float elapsedTime)
-{
-    // if (isAnimating)
-    // {
-    //     m_gameObjectManager.movePiece(_chessboard.m_board, from, to, elapsedTime, animationStartTime, isAnimating);
-    // }
-}
-
-void Renderer3D::render(float elapsedTime, std::array<std::unique_ptr<Piece>, 64>& chessboard)
-{
     m_shader.use();
-    // It's good but maybe just update Piece when the chessboard changes and not every frame?
-    m_gameObjectManager.updatePiecesPositions(chessboard);
-    m_gameObjectManager.updatePiecesData();
-    //
+    // UPDATE
+    if (move_processing.has_value())
+    {
+        std::cout << move_processing->from << " -> " << move_processing->to << "\n";
+        // -> ANIMATION
+        // m_gameObjectManager.movePiece(chessboard, move_processing.value(), elapsed_time, animationStartTime, isAnimating);
+
+        // if (!isAnimating)
+        // {
+        //     std::cout << "End of animation"
+        //               << "\n";
+        //     move_processing.reset(); // stop the move processing after animation
+        //     std::cout << "Update data !"
+        //               << "\n";
+        //     m_gameObjectManager.updatePiecesPositions(chessboard);
+        //     m_gameObjectManager.updatePiecesData();
+        // }
+        move_processing.reset(); // stop the move processing after animation
+        std::cout << "Update data !"
+                  << "\n";
+        m_gameObjectManager.updatePiecesPositions(chessboard);
+        m_gameObjectManager.updatePiecesData();
+    }
+    // RENDER
     m_gameObjectManager.renderGameObjects(m_shader);
 }

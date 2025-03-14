@@ -23,7 +23,7 @@ public:
     explicit King(const Color color = Color::None)
         : Piece(Type::King, color) {}
     void set_legal_moves(int from, const std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn) override;
-    void move_piece(int from, int to, std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn) override;
+    void move_piece(int from, int to, std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn, std::optional<MoveProcessing>& move_processing) override;
     //
     void add_threatening_pieces_in_direction(int start, Move move, Turn& turn, std::unordered_map<Type, std::vector<int>>& threats, const std::vector<Type>& targets, const std::array<std::unique_ptr<Piece>, 64>& board);
     void add_threatening_pieces(int start, Turn& turn, std::unordered_map<Type, std::vector<int>>& threats, const std::array<std::unique_ptr<Piece>, 64>& board);

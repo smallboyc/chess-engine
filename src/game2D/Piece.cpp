@@ -79,13 +79,14 @@ bool Piece::player_move_is_legal(int choice)
     return false;
 }
 
-void Piece::move_piece(const int from, const int to, std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn)
+void Piece::move_piece(const int from, const int to, std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn, std::optional<MoveProcessing>& move_processing)
 {
     turn.total++;
     board[to]   = std::move(board[from]);
     board[from] = nullptr;
     if (!m_has_moved)
         m_has_moved = true;
+    move_processing = {from, to};
 }
 
 void Piece::draw_scopes(int cell_index, Turn& turn, const std::array<std::unique_ptr<Piece>, 64>& board)

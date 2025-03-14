@@ -12,7 +12,7 @@ public:
     explicit Pawn(const Color color = Color::None)
         : Piece(Type::Pawn, color) {}
     void set_legal_moves(int from, const std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn) override;
-    void move_piece(int from, int to, std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn) override;
+    void move_piece(int from, int to, std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn, std::optional<MoveProcessing> &move_processing) override;
 
 private:
     bool is_vulnerable_to_en_passant() const override { return m_vulnerable_to_en_passant; };

@@ -27,6 +27,7 @@ struct ColorCells {
 };
 
 class Settings;
+
 class Chessboard {
 public:
     Chessboard()
@@ -43,6 +44,7 @@ public:
     Textures                                get_textures() const { return m_textures; };
     std::optional<Texture>                  get_selected_piece_texture();
     std::vector<MoveStatus>                 get_moves_saved() const { return m_move_saves; };
+    std::optional<MoveProcessing>&          get_move_processing() { return m_move_processing; };
     Warnings                                get_warnings() { return m_warnings; };
     void                                    board_size_listener(Settings& settings);
     void                                    board_colors_listener(Settings& settings);
@@ -57,7 +59,9 @@ private:
     Status                                 m_status;
     Warnings                               m_warnings;
     Textures                               m_textures;
-    std::vector<MoveStatus>                m_move_saves;
+    std::vector<MoveStatus>                m_move_saves;                    // gui
+    std::optional<MoveProcessing>          m_move_processing{std::nullopt}; // from & to (for 3D renderer animation)
+    //
     //
 
     void                   set_piece_on_board(const PiecePositions& piece_positions, const Color& piece_color);

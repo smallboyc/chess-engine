@@ -249,7 +249,8 @@ void Chessboard::toggle_king_selection()
     {
         m_status.king_is_selected = false;
         m_selected_piece.reset();
-        std::cout << "Roi déselectionné" << "\n";
+        std::cout << "Roi déselectionné"
+                  << "\n";
     }
     else
     {
@@ -259,7 +260,8 @@ void Chessboard::toggle_king_selection()
         piece->legal_moves()          = king->get_escape_moves();
         m_status.king_is_selected     = true;
         m_status.defender_is_selected = false;
-        std::cout << "Roi sélectionné" << "\n";
+        std::cout << "Roi sélectionné"
+                  << "\n";
     }
 }
 
@@ -269,7 +271,8 @@ void Chessboard::toggle_defender_selection(const int index, const std::vector<in
     {
         m_status.defender_is_selected = false;
         m_selected_piece.reset();
-        std::cout << "Allié déselectionné" << "\n";
+        std::cout << "Allié déselectionné"
+                  << "\n";
     }
     else
     {
@@ -278,7 +281,8 @@ void Chessboard::toggle_defender_selection(const int index, const std::vector<in
         piece->legal_moves()          = moves;
         m_status.defender_is_selected = true;
         m_status.king_is_selected     = false;
-        std::cout << "Allié sélectionné" << "\n";
+        std::cout << "Allié sélectionné"
+                  << "\n";
     }
 }
 
@@ -300,7 +304,7 @@ bool Chessboard::player_move(int selected_cell_index)
         auto deleted_enemy = std::move(m_board[selected_cell_index]);
 
         // Effectuer le mouvement
-        piece->move_piece(p_index, selected_cell_index, m_board, m_turn);
+        piece->move_piece(p_index, selected_cell_index, m_board, m_turn, m_move_processing);
 
         // Vérifier si le roi est en échec après le mouvement que si c'est pas le roi qui bouge (car le roi a pas à se protéger lui même).
         if (piece->get_type() != Type::King && king->is_in_check(k_index, m_turn, m_board))
@@ -329,6 +333,8 @@ void Chessboard::cancel_player_move(int from, int to, std::unique_ptr<Piece> res
     m_board[to]   = std::move(m_board[from]);
     m_board[from] = std::move(respawn_enemy);
     m_turn.total--;
+    //
+    m_move_processing.reset();
 }
 
 void Chessboard::display_scopes(int cell_index, Settings& settings)

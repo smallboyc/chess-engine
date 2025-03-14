@@ -7,6 +7,12 @@
 #include "Types.hpp"
 #include "utils.hpp"
 
+// Use to pass the move data to the Renderer3D & perform a cool animation.
+struct MoveProcessing {
+    int from;
+    int to;
+};
+
 struct PiecePositions {
     Type             piece_type;
     std::vector<int> black_position;
@@ -42,7 +48,7 @@ public:
     virtual void set_active_double_move(){};
     virtual void bind_rooks(std::vector<int>& rooks){};
     virtual void set_legal_moves(int from, const std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn) = 0;
-    virtual void move_piece(int from, int to, std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn);
+    virtual void move_piece(int from, int to, std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn, std::optional<MoveProcessing>& move_processing);
 
 private:
     Type             m_type;

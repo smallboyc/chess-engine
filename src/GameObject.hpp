@@ -13,11 +13,13 @@ public:
     void loadMesh(const std::string& path, const std::string& name);
     void setupBuffers();
     // have better control over instance buffers
-    void updateMatInstancingBuffer();
-    void updateColorInstancingBuffer();
-    void clearInstancingBuffers();
-    void pushMatrix(const glm::vec3& position);
-    void pushColor(const glm::vec3& color);
+    void                                           updateMatInstancingBuffer();
+    void                                           updateColorInstancingBuffer();
+    void                                           clearInstancingBuffers();
+    void                                           pushMatrix(const glm::vec3& position);
+    void                                           pushColor(const glm::vec3& color);
+    void                                           updateBoardRelations(int i);
+    std::unordered_map<unsigned int, unsigned int> m_board_instance_relation; // board index / model matrix index in m_modelMatrices
 
 private:
     // single mesh
@@ -32,7 +34,6 @@ private:
     VBO m_instanceVBO;
     VBO m_colorVBO;
     // Dis quels indices correspond à la matrice stocké sur le board
-    // std::unordered_map<unsigned int, unsigned int> m_board_instance_relation; // board index / model matrix index in m_modelMatrices
     std::vector<glm::mat4> m_modelMatrices;
     std::vector<glm::vec3> m_pieceColors;
 };

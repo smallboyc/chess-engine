@@ -14,11 +14,9 @@ public:
     void           window_size_callback(int width, int height);
     void           toggle_active_camera_callback(int key, int action);
     void           init(std::array<std::unique_ptr<Piece>, 64>& chessboard);
-    void           run(std::array<std::unique_ptr<Piece>, 64>& chessboard);
+    void           run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::optional<MoveProcessing>& move_processing);
 
 private:
-    void              update(float elapsedTime);
-    void              render(float elapsedTime, std::array<std::unique_ptr<Piece>, 64>& chessboard);
     glmax::Camera     m_camera{true};
     glmax::Shader     m_shader{};
     GameObjectManager m_gameObjectManager;
@@ -26,8 +24,5 @@ private:
     int               window_height;
     bool              isAnimating{};
     float             animationStartTime{0.0f};
-    // Animation test with knight positions
-    unsigned int                          from = 1;
-    unsigned int                          to   = 17;
     std::chrono::steady_clock::time_point start_time;
 };

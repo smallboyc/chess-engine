@@ -59,7 +59,7 @@ void Pawn::set_legal_moves(int from, const std::array<std::unique_ptr<Piece>, 64
     }
 }
 
-void Pawn::move_piece(const int from, const int to, std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn)
+void Pawn::move_piece(const int from, const int to, std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn, std::optional<MoveProcessing>& move_processing)
 {
     if (is_at_the_board_end(to))
     {
@@ -84,6 +84,8 @@ void Pawn::move_piece(const int from, const int to, std::array<std::unique_ptr<P
         }
         board[to] = std::move(board[from]);
     }
+    //
+    move_processing = {from, to};
 }
 
 bool Pawn::has_target_enemy_at_same_level(int from, int to, std::array<std::unique_ptr<Piece>, 64>& board)

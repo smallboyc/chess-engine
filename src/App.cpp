@@ -4,10 +4,11 @@
 
 int main()
 {
-    Chessboard  game2D;
-    GameTracker game_tracker;
-    Settings    settings;
-    Renderer3D  renderer3D(1280, 720);
+    Chessboard                    game2D;
+    GameTracker                   game_tracker;
+    Settings                      settings;
+    Renderer3D                    renderer3D(1280, 720);
+    //
     quick_imgui::loop(
         "Chess App",
         {
@@ -18,7 +19,7 @@ int main()
             ImGui::GetStyle().ItemSpacing = ImVec2(0.0f, 0.0f); },
             .loop = [&]() { 
                 //RENDER 3D
-                renderer3D.run(game2D.get_chessboard());
+                renderer3D.run(game2D.get_chessboard(), game2D.get_move_processing());
                 //GAME 2D
                 ImGui::SetNextWindowSizeConstraints(ImVec2(0, 0), ImVec2(FLT_MAX, FLT_MAX));
                 // chessboard window

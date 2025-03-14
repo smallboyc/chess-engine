@@ -24,7 +24,7 @@ void King::set_legal_moves(int from, const std::array<std::unique_ptr<Piece>, 64
     }
 }
 
-void King::move_piece(const int from, const int to, std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn)
+void King::move_piece(const int from, const int to, std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn, std::optional<MoveProcessing>& move_processing)
 {
     turn.total++;
     board[to] = std::move(board[from]);
@@ -33,13 +33,16 @@ void King::move_piece(const int from, const int to, std::array<std::unique_ptr<P
     {
         if (handle_castling(to, board))
         {
-            std::cout << "Roque!" << "\n";
+            std::cout << "Roque!"
+                      << "\n";
             m_castling.reset();
         }
     }
 
     if (!has_moved())
         set_has_moved(true);
+    //
+    move_processing = {from, to};
 }
 
 bool King::handle_castling(int king_target, std::array<std::unique_ptr<Piece>, 64>& board)
