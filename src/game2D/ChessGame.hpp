@@ -5,6 +5,7 @@
 #include <memory>
 #include <optional>
 #include "./gui/Settings.hpp"
+#include "Animation.hpp"
 #include "King.hpp"
 #include "Piece.hpp"
 #include "Types.hpp"
@@ -28,39 +29,40 @@ struct ColorCells {
 
 class Settings;
 
-class Chessboard {
+class ChessGame {
 public:
-    Chessboard()
+    ChessGame()
     {
         initialize_board();
         set_current_king();
     };
     void load_all_textures(const std::string& folder_path);
     void initialize_board();
-    void play(Settings& settings);
+    // PLAY
+    void play(Settings& settings, Animation& animation);
     //
-    std::array<std::unique_ptr<Piece>, 64>& get_chessboard() { return m_board; };
-    Turn                                    get_turn() const { return m_turn; };
-    Textures                                get_textures() const { return m_textures; };
-    std::optional<Texture>                  get_selected_piece_texture();
-    std::vector<MoveStatus>                 get_moves_saved() const { return m_move_saves; };
-    std::optional<MoveProcessing>&          get_move_processing() { return m_move_processing; };
-    Warnings                                get_warnings() { return m_warnings; };
-    void                                    board_size_listener(Settings& settings);
-    void                                    board_colors_listener(Settings& settings);
+    Chessboard&                    get_chessboard() { return m_board; };
+    Turn                           get_turn() const { return m_turn; };
+    Textures                       get_textures() const { return m_textures; };
+    std::optional<Texture>         get_selected_piece_texture();
+    std::vector<MoveStatus>        get_moves_saved() const { return m_move_saves; };
+    std::optional<MoveProcessing>& get_move_processing() { return m_move_processing; };
+    Warnings                       get_warnings() { return m_warnings; };
+    void                           board_size_listener(Settings& settings);
+    void                           board_colors_listener(Settings& settings);
 
 private:
-    float                                  m_size{};
-    ColorCells                             m_color_cells;
-    std::array<std::unique_ptr<Piece>, 64> m_board;
-    std::optional<std::pair<int, Piece*>>  m_selected_piece{std::nullopt};
-    std::pair<int, King*>                  m_current_king;
-    Turn                                   m_turn;
-    Status                                 m_status;
-    Warnings                               m_warnings;
-    Textures                               m_textures;
-    std::vector<MoveStatus>                m_move_saves;                    // gui
-    std::optional<MoveProcessing>          m_move_processing{std::nullopt}; // from & to (for 3D renderer animation)
+    float                                 m_size{};
+    ColorCells                            m_color_cells;
+    Chessboard                            m_board; //!!
+    std::optional<std::pair<int, Piece*>> m_selected_piece{std::nullopt};
+    std::pair<int, King*>                 m_current_king;
+    Turn                                  m_turn;
+    Status                                m_status;
+    Warnings                              m_warnings;
+    Textures                              m_textures;
+    std::vector<MoveStatus>               m_move_saves;                    // for the gui
+    std::optional<MoveProcessing>         m_move_processing{std::nullopt}; // from & to (for 3D renderer animation)
     //
     //
 

@@ -1,4 +1,4 @@
-#include "Chessboard.hpp"
+#include "ChessGame.hpp"
 #include <imgui.h>
 #include <cmath>
 #include <filesystem>
@@ -15,16 +15,16 @@
 #include "Types.hpp"
 #include "utils.hpp"
 
-void Chessboard::board_size_listener(Settings& settings)
+void ChessGame::board_size_listener(Settings& settings)
 {
     m_size = settings.get_board_size();
 }
-void Chessboard::board_colors_listener(Settings& settings)
+void ChessGame::board_colors_listener(Settings& settings)
 {
     m_color_cells = {settings.get_primary_color(), settings.get_secondary_color()};
 }
 
-std::optional<Texture> Chessboard::get_selected_piece_texture()
+std::optional<Texture> ChessGame::get_selected_piece_texture()
 {
     if (m_selected_piece.has_value())
     {
@@ -35,7 +35,7 @@ std::optional<Texture> Chessboard::get_selected_piece_texture()
 }
 
 // Create
-void Chessboard::initialize_board()
+void ChessGame::initialize_board()
 {
     std::array<PiecePositions, 6> initial_positions = {
         PiecePositions{Type::Pawn, {8, 9, 10, 11, 12, 13, 14, 15}, {48, 49, 51, 50, 52, 53, 54, 55}},
@@ -53,7 +53,7 @@ void Chessboard::initialize_board()
     }
 }
 
-void Chessboard::set_piece_on_board(const PiecePositions& piece_positions, const Color& piece_color)
+void ChessGame::set_piece_on_board(const PiecePositions& piece_positions, const Color& piece_color)
 {
     std::vector<int> current_piece_color = piece_positions.white_position;
     if (piece_color == Color::Black)
@@ -63,7 +63,7 @@ void Chessboard::set_piece_on_board(const PiecePositions& piece_positions, const
         m_board[piece_position] = create_piece(piece_positions.piece_type, piece_color);
 }
 
-std::unique_ptr<Piece> Chessboard::create_piece(const Type& piece_type, const Color& piece_color)
+std::unique_ptr<Piece> ChessGame::create_piece(const Type& piece_type, const Color& piece_color)
 {
     switch (piece_type)
     {
@@ -77,7 +77,7 @@ std::unique_ptr<Piece> Chessboard::create_piece(const Type& piece_type, const Co
     }
 }
 
-void Chessboard::set_current_king()
+void ChessGame::set_current_king()
 {
     for (int i{0}; i < m_board.size(); i++)
     {
@@ -94,7 +94,7 @@ void Chessboard::set_current_king()
     }
 }
 
-void Chessboard::bind_rooks_with_king()
+void ChessGame::bind_rooks_with_king()
 {
     std::vector<int> rooks;
     // on lui associe les ses tours
@@ -108,7 +108,7 @@ void Chessboard::bind_rooks_with_king()
     m_current_king.second->set_castling(rooks);
 }
 
-std::optional<int> Chessboard::draw_cell(int cell_index, const ImVec4& color)
+std::optional<int> ChessGame::draw_cell(int cell_index, const ImVec4& color)
 {
     ImGui::PushID(cell_index);
     ImGui::PushStyleColor(ImGuiCol_Button, color);
@@ -123,7 +123,7 @@ std::optional<int> Chessboard::draw_cell(int cell_index, const ImVec4& color)
     return clicked ? std::optional<int>{cell_index} : std::nullopt;
 }
 
-void Chessboard::play(Settings& settings)
+void ChessGame::play(Settings& settings, Animation& animation)
 {
     ImVec4 current_color_cell = m_color_cells.first;
     for (int i{0}; i < m_board.size(); i++)
@@ -133,7 +133,7 @@ void Chessboard::play(Settings& settings)
 
         std::optional<int> clicked_cell = draw_cell(i, current_color_cell);
 
-        if (clicked_cell.has_value())
+        if (clicked_cell.has_value() && !animation.isAnimating)
         {
             if (m_status.free_play)
             {
@@ -148,7 +148,7 @@ void Chessboard::play(Settings& settings)
     }
 }
 
-void Chessboard::handle_free_play(int clicked_cell)
+void ChessGame::handle_free_play(int clicked_cell)
 {
     // current_player
     if (piece_can_be_selected(clicked_cell))
@@ -186,7 +186,7 @@ void Chessboard::handle_free_play(int clicked_cell)
     }
 }
 
-void Chessboard::handle_check_situation(int clicked_cell)
+void ChessGame::handle_check_situation(int clicked_cell)
 {
     auto& [index, king] = m_current_king;
     //
@@ -222,7 +222,7 @@ void Chessboard::handle_check_situation(int clicked_cell)
     }
 }
 
-void Chessboard::handle_double_check()
+void ChessGame::handle_double_check()
 {
     auto& [index, king] = m_current_king;
     //
@@ -231,7 +231,7 @@ void Chessboard::handle_double_check()
         m_warnings.checkmate = true;
 }
 
-void Chessboard::handle_single_check()
+void ChessGame::handle_single_check()
 {
     auto& [index, king] = m_current_king;
     //
@@ -242,7 +242,7 @@ void Chessboard::handle_single_check()
         m_warnings.checkmate = true;
 }
 
-void Chessboard::toggle_king_selection()
+void ChessGame::toggle_king_selection()
 {
     //
     if (m_status.king_is_selected)
@@ -265,7 +265,7 @@ void Chessboard::toggle_king_selection()
     }
 }
 
-void Chessboard::toggle_defender_selection(const int index, const std::vector<int>& moves)
+void ChessGame::toggle_defender_selection(const int index, const std::vector<int>& moves)
 {
     if (m_status.defender_is_selected)
     {
@@ -286,14 +286,14 @@ void Chessboard::toggle_defender_selection(const int index, const std::vector<in
     }
 }
 
-void Chessboard::select_piece(int selected_cell_index)
+void ChessGame::select_piece(int selected_cell_index)
 {
     m_selected_piece     = {selected_cell_index, m_board[selected_cell_index].get()};
     auto& [index, piece] = m_selected_piece.value();
     piece->set_legal_moves(index, m_board, m_turn);
 }
 
-bool Chessboard::player_move(int selected_cell_index)
+bool ChessGame::player_move(int selected_cell_index)
 {
     auto& [p_index, piece] = m_selected_piece.value();
     auto& [k_index, king]  = m_current_king;
@@ -328,7 +328,7 @@ bool Chessboard::player_move(int selected_cell_index)
     return false;
 }
 
-void Chessboard::cancel_player_move(int from, int to, std::unique_ptr<Piece> respawn_enemy)
+void ChessGame::cancel_player_move(int from, int to, std::unique_ptr<Piece> respawn_enemy)
 {
     m_board[to]   = std::move(m_board[from]);
     m_board[from] = std::move(respawn_enemy);
@@ -337,7 +337,7 @@ void Chessboard::cancel_player_move(int from, int to, std::unique_ptr<Piece> res
     m_move_processing.reset();
 }
 
-void Chessboard::display_scopes(int cell_index, Settings& settings)
+void ChessGame::display_scopes(int cell_index, Settings& settings)
 {
     auto& [index, king] = m_current_king;
     if (piece_selected() && settings.is_legal_moves_scope_active())
@@ -351,17 +351,17 @@ void Chessboard::display_scopes(int cell_index, Settings& settings)
         king->draw_defenders_scopes(m_selected_piece, cell_index);
     }
 }
-bool Chessboard::piece_can_be_selected(int cell_index)
+bool ChessGame::piece_can_be_selected(int cell_index)
 {
     return !is_empty_cell(cell_index, m_board) && m_board[cell_index]->get_color() == m_turn.current_player;
 }
 
-bool Chessboard::piece_selected() const
+bool ChessGame::piece_selected() const
 {
     return m_selected_piece.has_value();
 }
 
-void Chessboard::switch_player_turn()
+void ChessGame::switch_player_turn()
 {
     m_selected_piece.reset();
     m_warnings.reset();
@@ -370,7 +370,7 @@ void Chessboard::switch_player_turn()
 }
 
 // textures
-void Chessboard::load_all_textures(const std::string& folder_path)
+void ChessGame::load_all_textures(const std::string& folder_path)
 {
     for (const auto& entry : std::filesystem::directory_iterator(folder_path))
     {
@@ -388,7 +388,7 @@ void Chessboard::load_all_textures(const std::string& folder_path)
 }
 
 // utils
-void Chessboard::clear_all_legal_moves()
+void ChessGame::clear_all_legal_moves()
 {
     for (int i{0}; i < m_board.size(); i++)
     {

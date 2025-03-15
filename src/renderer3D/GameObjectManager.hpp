@@ -1,4 +1,5 @@
 #pragma once
+#include "Animation.hpp"
 #include "GameObject.hpp"
 #include "game2D/Piece.hpp"
 
@@ -13,7 +14,7 @@ public:
     void updatePiecesData();
     void loadAllPieces();
     void loadChessboard();
-    void movePiece(std::array<std::unique_ptr<Piece>, 64>& chessboard, MoveProcessing& moveProcessing, float& elapsedTime, float& animationStartTime, bool& isAnimating);
+    void movePiece(std::array<std::unique_ptr<Piece>, 64>& chessboard, MoveProcessing& moveProcessing, float& elapsedTime, Animation& animation);
     void renderGameObjects(glmax::Shader& shader);
 
 private:

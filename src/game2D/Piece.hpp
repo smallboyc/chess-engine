@@ -40,15 +40,15 @@ public:
     bool              player_move_is_legal(int choice);
     bool              has_moved() const { return m_has_moved; }
     void              set_has_moved(bool has_moved) { m_has_moved = has_moved; };
-    void              draw_scopes(int cell_index, Turn& turn, const std::array<std::unique_ptr<Piece>, 64>& board);
+    void              draw_scopes(int cell_index, Turn& turn, const Chessboard& board);
     void              set_capture(bool capture) { m_has_captured = capture; };
     bool              has_captured() const { return m_has_captured; };
     //
     virtual bool is_vulnerable_to_en_passant() const { return false; };
     virtual void set_active_double_move(){};
     virtual void bind_rooks(std::vector<int>& rooks){};
-    virtual void set_legal_moves(int from, const std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn) = 0;
-    virtual void move_piece(int from, int to, std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn, std::optional<MoveProcessing>& move_processing);
+    virtual void set_legal_moves(int from, const Chessboard& board, Turn& turn) = 0;
+    virtual void move_piece(int from, int to, Chessboard& board, Turn& turn, std::optional<MoveProcessing>& move_processing);
 
 private:
     Type             m_type;
@@ -58,6 +58,6 @@ private:
     bool             m_has_moved{};
 };
 
-bool is_empty_cell(int index, const std::array<std::unique_ptr<Piece>, 64>& board);
-bool is_enemy_targeted(int index, Turn& turn, const std::array<std::unique_ptr<Piece>, 64>& board);
-void add_moves_in_direction(int from, Move move, std::vector<int>& legal_moves, Turn& turn, const std::array<std::unique_ptr<Piece>, 64>& board);
+bool is_empty_cell(int index, const Chessboard& board);
+bool is_enemy_targeted(int index, Turn& turn, const Chessboard& board);
+void add_moves_in_direction(int from, Move move, std::vector<int>& legal_moves, Turn& turn, const Chessboard& board);

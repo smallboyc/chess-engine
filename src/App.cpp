@@ -1,36 +1,42 @@
-#include "./game2D/Chessboard.hpp"
-#include "Renderer3D.hpp"
+#include "./game2D/ChessGame.hpp"
+#include "./renderer3D/Renderer3D.hpp"
+#include "Animation.hpp"
 #include "game2D/gui/GameTracker.hpp"
 
 int main()
 {
-    Chessboard                    game2D;
-    GameTracker                   game_tracker;
-    Settings                      settings;
-    Renderer3D                    renderer3D(1280, 720);
+    // Game 2D
+    ChessGame   chess2D;
+    GameTracker game_tracker;
+    Settings    settings;
+    // Renderer 3D
+    Renderer3D renderer3D(1280, 720);
+    //
+    Animation animation;
     //
     quick_imgui::loop(
         "Chess App",
         {
             .init = [&]() { 
+            ImGui::GetStyle().ItemSpacing = ImVec2(0.0f, 0.0f); 
             // load_font("../../assets/fonts/PoetsenOne-Regular.ttf", 20.0f);
-            game2D.load_all_textures("../../assets/images/");
-            renderer3D.init(game2D.get_chessboard());
-            ImGui::GetStyle().ItemSpacing = ImVec2(0.0f, 0.0f); },
+             //GAME 2D
+            chess2D.load_all_textures("../../assets/images/");
+            //RENDER 3D
+            renderer3D.init(chess2D.get_chessboard()); },
             .loop = [&]() { 
-                //RENDER 3D
-                renderer3D.run(game2D.get_chessboard(), game2D.get_move_processing());
                 //GAME 2D
                 ImGui::SetNextWindowSizeConstraints(ImVec2(0, 0), ImVec2(FLT_MAX, FLT_MAX));
-                // chessboard window
                 ImGui::Begin("Chessboard", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-                game2D.board_size_listener(settings);
-                game2D.board_colors_listener(settings);
-                game2D.play(settings);
+                chess2D.board_size_listener(settings);
+                chess2D.board_colors_listener(settings);
+                chess2D.play(settings, animation);
                 ImGui::End();
+                //RENDER 3D
+                renderer3D.run(chess2D.get_chessboard(), chess2D.get_move_processing(), animation);
             // user windows
             settings.show();
-            game_tracker.show(game2D); },
+            game_tracker.show(chess2D); },
             // CALLBACKS
             .key_callback             = [&](int key, int /*scancode*/, int action, int mods) { 
             renderer3D.useCamera().free_move_callback(key, action);

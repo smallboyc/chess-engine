@@ -1,5 +1,4 @@
 #include "GameObjectManager.hpp"
-#include <iostream>
 #include "game2D/Piece.hpp"
 #include "glm/fwd.hpp"
 #include "utils.hpp"
@@ -71,21 +70,20 @@ void GameObjectManager::loadChessboard()
     m_chessboard.setupBuffers();
 }
 
-// This method is about to change (from & to logic not ok)
-void GameObjectManager::movePiece(std::array<std::unique_ptr<Piece>, 64>& chessboard, MoveProcessing& moveProcessing, float& elapsedTime, float& animationStartTime, bool& isAnimating)
+void GameObjectManager::movePiece(std::array<std::unique_ptr<Piece>, 64>& chessboard, MoveProcessing& moveProcessing, float& elapsedTime, Animation& animation)
 {
     auto [from, to] = moveProcessing;
-    float t         = (elapsedTime - animationStartTime) / animationDuration;
+    float t         = (elapsedTime - animation.animationStartTime) / animationDuration;
     // std::cout << animationStartTime << "\n";
     if (t >= 1.0f)
     {
         t = 1.0f;
         // end of animation
-        isAnimating = false;
+        animation.isAnimating = false;
     }
     // update the piece position
     // if the piece is a knight, we need to elevate it
-    if (isAnimating)
+    if (animation.isAnimating)
     {
         if (chessboard[to] && chessboard[to]->get_type() == Type::Knight)
         {

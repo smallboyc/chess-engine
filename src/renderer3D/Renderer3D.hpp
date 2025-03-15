@@ -14,7 +14,7 @@ public:
     void           window_size_callback(int width, int height);
     void           toggle_active_camera_callback(int key, int action);
     void           init(std::array<std::unique_ptr<Piece>, 64>& chessboard);
-    void           run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::optional<MoveProcessing>& move_processing);
+    void           run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::optional<MoveProcessing>& move_processing, Animation& animation);
 
 private:
     glmax::Camera                         m_camera{true};
@@ -22,7 +22,5 @@ private:
     GameObjectManager                     m_gameObjectManager;
     int                                   window_width;
     int                                   window_height;
-    bool                                  isAnimating{false};
-    float                                 animationStartTime{0.0f};
     std::chrono::steady_clock::time_point start_time;
 };

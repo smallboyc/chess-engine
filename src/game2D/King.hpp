@@ -22,15 +22,15 @@ class King : public Piece {
 public:
     explicit King(const Color color = Color::None)
         : Piece(Type::King, color) {}
-    void set_legal_moves(int from, const std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn) override;
-    void move_piece(int from, int to, std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn, std::optional<MoveProcessing>& move_processing) override;
+    void set_legal_moves(int from, const Chessboard& board, Turn& turn) override;
+    void move_piece(int from, int to, Chessboard& board, Turn& turn, std::optional<MoveProcessing>& move_processing) override;
     //
-    void add_threatening_pieces_in_direction(int start, Move move, Turn& turn, std::unordered_map<Type, std::vector<int>>& threats, const std::vector<Type>& targets, const std::array<std::unique_ptr<Piece>, 64>& board);
-    void add_threatening_pieces(int start, Turn& turn, std::unordered_map<Type, std::vector<int>>& threats, const std::array<std::unique_ptr<Piece>, 64>& board);
-    bool is_in_check(int index, Turn& turn, const std::array<std::unique_ptr<Piece>, 64>& board);
-    bool is_double_check(int index, Turn& turn, const std::array<std::unique_ptr<Piece>, 64>& board);
-    bool has_allies_to_defend(Turn& turn, const std::array<std::unique_ptr<Piece>, 64>& board);
-    bool can_escape(int index, Turn& turn, const std::array<std::unique_ptr<Piece>, 64>& board);
+    void add_threatening_pieces_in_direction(int start, Move move, Turn& turn, std::unordered_map<Type, std::vector<int>>& threats, const std::vector<Type>& targets, const Chessboard& board);
+    void add_threatening_pieces(int start, Turn& turn, std::unordered_map<Type, std::vector<int>>& threats, const Chessboard& board);
+    bool is_in_check(int index, Turn& turn, const Chessboard& board);
+    bool is_double_check(int index, Turn& turn, const Chessboard& board);
+    bool has_allies_to_defend(Turn& turn, const Chessboard& board);
+    bool can_escape(int index, Turn& turn, const Chessboard& board);
     void reset_buffers();
     //
     auto&            get_threats() const { return m_threats; };
@@ -43,12 +43,12 @@ public:
     // Castling
     void                    set_castling(const std::vector<int>& rooks) { m_castling = Castling(rooks); };
     std::optional<Castling> get_castling() const { return m_castling; }
-    void                    check_for_castling(int index, const std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn);
-    bool                    kingside_castling_is_free(int index, const std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn);
-    bool                    queenside_castling_is_free(int index, const std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn);
-    bool                    cell_is_free(int i, const std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn);
-    bool                    handle_castling(int king_target, std::array<std::unique_ptr<Piece>, 64>& board);
-    void                    move_rook(int from, int to, std::array<std::unique_ptr<Piece>, 64>& board);
+    void                    check_for_castling(int index, const Chessboard& board, Turn& turn);
+    bool                    kingside_castling_is_free(int index, const Chessboard& board, Turn& turn);
+    bool                    queenside_castling_is_free(int index, const Chessboard& board, Turn& turn);
+    bool                    cell_is_free(int i, const Chessboard& board, Turn& turn);
+    bool                    handle_castling(int king_target, Chessboard& board);
+    void                    move_rook(int from, int to, Chessboard& board);
 
 private:
     std::optional<Castling> m_castling;

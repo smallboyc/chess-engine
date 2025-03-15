@@ -2,7 +2,7 @@
 #include <imgui.h>
 #include "Piece.hpp"
 
-void Queen::set_legal_moves(int from, const std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn)
+void Queen::set_legal_moves(int from, const Chessboard& board, Turn& turn)
 {
     for (const Move& move : queen_moves)
     {

@@ -34,17 +34,17 @@ int Piece::direction() const
     return get_color() == Color::Black ? 1 : -1;
 }
 
-bool is_empty_cell(const int index, const std::array<std::unique_ptr<Piece>, 64>& board)
+bool is_empty_cell(const int index, const Chessboard& board)
 {
     return board[index] == nullptr;
 }
 
-bool is_enemy_targeted(const int index, Turn& turn, const std::array<std::unique_ptr<Piece>, 64>& board)
+bool is_enemy_targeted(const int index, Turn& turn, const Chessboard& board)
 {
     return !is_empty_cell(index, board) && turn.current_player != board[index]->get_color();
 }
 
-void add_moves_in_direction(int from, const Move move, std::vector<int>& legal_moves, Turn& turn, const std::array<std::unique_ptr<Piece>, 64>& board)
+void add_moves_in_direction(int from, const Move move, std::vector<int>& legal_moves, Turn& turn, const Chessboard& board)
 {
     Position position = get_position(from);
     int      x        = position.x + static_cast<int>(move.dx);
@@ -79,7 +79,7 @@ bool Piece::player_move_is_legal(int choice)
     return false;
 }
 
-void Piece::move_piece(const int from, const int to, std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn, std::optional<MoveProcessing>& move_processing)
+void Piece::move_piece(const int from, const int to, Chessboard& board, Turn& turn, std::optional<MoveProcessing>& move_processing)
 {
     turn.total++;
     board[to]   = std::move(board[from]);
@@ -89,7 +89,7 @@ void Piece::move_piece(const int from, const int to, std::array<std::unique_ptr<
     move_processing = {from, to};
 }
 
-void Piece::draw_scopes(int cell_index, Turn& turn, const std::array<std::unique_ptr<Piece>, 64>& board)
+void Piece::draw_scopes(int cell_index, Turn& turn, const Chessboard& board)
 {
     if (std::find(m_legal_moves.begin(), m_legal_moves.end(), cell_index) != m_legal_moves.end())
     {

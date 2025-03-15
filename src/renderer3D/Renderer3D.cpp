@@ -1,6 +1,7 @@
 #include "Renderer3D.hpp"
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include "Animation.hpp"
 #include "glm/ext/matrix_clip_space.hpp"
 
 void Renderer3D::window_size_callback(int width, int height)
@@ -28,7 +29,7 @@ void Renderer3D::init(std::array<std::unique_ptr<Piece>, 64>& chessboard)
     m_gameObjectManager.loadChessboard();
 }
 
-void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::optional<MoveProcessing>& move_processing)
+void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::optional<MoveProcessing>& move_processing, Animation &animation)
 {
     glClearColor(0.847f, 0.82f, 0.929f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -49,17 +50,17 @@ void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::op
     // UPDATE
     if (move_processing.has_value())
     {
-        if (!isAnimating)
+        if (!animation.isAnimating)
         {
-            isAnimating        = true;
-            animationStartTime = elapsed_time;
+            animation.isAnimating        = true;
+            animation.animationStartTime = elapsed_time;
         }
 
         // -> ANIMATION
-        m_gameObjectManager.movePiece(chessboard, move_processing.value(), elapsed_time, animationStartTime, isAnimating);
+        m_gameObjectManager.movePiece(chessboard, move_processing.value(), elapsed_time, animation);
 
         // -> Update data after the animation's end
-        if (!isAnimating)
+        if (!animation.isAnimating)
         {
             std::cout << "Update data after the end of animation!"
                       << "\n";

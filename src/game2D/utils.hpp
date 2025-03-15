@@ -61,6 +61,7 @@ struct Warnings {
     void reset();
 };
 
+// gui
 struct MoveStatus {
     int     index;
     Texture texture;

@@ -6,7 +6,7 @@
 #include "PieceMove.hpp"
 #include "utils.hpp"
 
-void King::set_legal_moves(int from, const std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn)
+void King::set_legal_moves(int from, const Chessboard& board, Turn& turn)
 {
     std::vector<int> theoric_moves;
     for (const Move& move : king_moves)
@@ -24,7 +24,7 @@ void King::set_legal_moves(int from, const std::array<std::unique_ptr<Piece>, 64
     }
 }
 
-void King::move_piece(const int from, const int to, std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn, std::optional<MoveProcessing>& move_processing)
+void King::move_piece(const int from, const int to, Chessboard& board, Turn& turn, std::optional<MoveProcessing>& move_processing)
 {
     turn.total++;
     board[to] = std::move(board[from]);
@@ -45,7 +45,7 @@ void King::move_piece(const int from, const int to, std::array<std::unique_ptr<P
     move_processing = {from, to};
 }
 
-bool King::handle_castling(int king_target, std::array<std::unique_ptr<Piece>, 64>& board)
+bool King::handle_castling(int king_target, Chessboard& board)
 {
     if (king_target == m_castling->kingside_special_moves.new_king_index)
     {
@@ -60,14 +60,14 @@ bool King::handle_castling(int king_target, std::array<std::unique_ptr<Piece>, 6
     return false;
 }
 
-void King::move_rook(int from, int to, std::array<std::unique_ptr<Piece>, 64>& board)
+void King::move_rook(int from, int to, Chessboard& board)
 {
     board[to]   = std::move(board[from]);
     board[from] = nullptr;
 }
 
 // King
-void King::add_threatening_pieces_in_direction(int start, const Move move, Turn& turn, std::unordered_map<Type, std::vector<int>>& threats, const std::vector<Type>& targets, const std::array<std::unique_ptr<Piece>, 64>& board)
+void King::add_threatening_pieces_in_direction(int start, const Move move, Turn& turn, std::unordered_map<Type, std::vector<int>>& threats, const std::vector<Type>& targets, const Chessboard& board)
 {
     Position position = get_position(start);
     int      x        = position.x + static_cast<int>(move.dx);
@@ -105,7 +105,7 @@ struct TargetPieceTypeOnPath {
     std::vector<Type>     piece_types;
 };
 
-void King::add_threatening_pieces(int start, Turn& turn, std::unordered_map<Type, std::vector<int>>& threats, const std::array<std::unique_ptr<Piece>, 64>& board)
+void King::add_threatening_pieces(int start, Turn& turn, std::unordered_map<Type, std::vector<int>>& threats, const Chessboard& board)
 {
     std::vector<TargetPieceTypeOnPath> target_path_pieces = {
         {rook_moves, {Type::Rook, Type::Queen}},
@@ -129,25 +129,25 @@ void King::add_threatening_pieces(int start, Turn& turn, std::unordered_map<Type
     add_threatening_pieces_in_direction(start, {Direction::Right, pawn_direction}, turn, threats, {Type::Pawn}, board);
 }
 
-bool King::is_in_check(const int index, Turn& turn, const std::array<std::unique_ptr<Piece>, 64>& board)
+bool King::is_in_check(const int index, Turn& turn, const Chessboard& board)
 {
     m_threats.clear();
     add_threatening_pieces(index, turn, m_threats, board);
     return !m_threats.empty();
 };
 
-bool King::is_double_check(const int index, Turn& turn, const std::array<std::unique_ptr<Piece>, 64>& board)
+bool King::is_double_check(const int index, Turn& turn, const Chessboard& board)
 {
     return is_in_check(index, turn, board) && m_threats.size() > 1;
 };
 
 //
-bool is_ally(int index, Turn& turn, const std::array<std::unique_ptr<Piece>, 64>& board)
+bool is_ally(int index, Turn& turn, const Chessboard& board)
 {
     return !is_empty_cell(index, board) && board[index]->get_color() == turn.current_player && board[index]->get_type() != Type::King;
 }
 
-bool King::has_allies_to_defend(Turn& turn, const std::array<std::unique_ptr<Piece>, 64>& board)
+bool King::has_allies_to_defend(Turn& turn, const Chessboard& board)
 {
     auto& [type, enemy_move] = *m_threats.begin();
     for (int i{0}; i < board.size(); i++)
@@ -173,7 +173,7 @@ bool King::has_allies_to_defend(Turn& turn, const std::array<std::unique_ptr<Pie
     return !m_defenders.empty();
 }
 
-bool King::can_escape(const int index, Turn& turn, const std::array<std::unique_ptr<Piece>, 64>& board)
+bool King::can_escape(const int index, Turn& turn, const Chessboard& board)
 {
     // Récupérer les mouvements théoriques du roi.
     set_legal_moves(index, board, turn);
@@ -254,7 +254,7 @@ void King::reset_buffers()
 }
 
 // Castling
-void King::check_for_castling(const int index, const std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn)
+void King::check_for_castling(const int index, const Chessboard& board, Turn& turn)
 {
     if (!m_castling->kingside_canceled)
     {
@@ -295,7 +295,7 @@ void King::check_for_castling(const int index, const std::array<std::unique_ptr<
     }
 }
 
-bool King::kingside_castling_is_free(const int index, const std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn)
+bool King::kingside_castling_is_free(const int index, const Chessboard& board, Turn& turn)
 {
     for (int i{index + 1}; i < m_castling->kingside_rook_index; i++)
     {
@@ -305,7 +305,7 @@ bool King::kingside_castling_is_free(const int index, const std::array<std::uniq
     return true;
 }
 
-bool King::queenside_castling_is_free(const int index, const std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn)
+bool King::queenside_castling_is_free(const int index, const Chessboard& board, Turn& turn)
 {
     for (int i{index - 1}; i > m_castling->queenside_rook_index; i--)
     {
@@ -315,7 +315,7 @@ bool King::queenside_castling_is_free(const int index, const std::array<std::uni
     return true;
 }
 
-bool King::cell_is_free(const int i, const std::array<std::unique_ptr<Piece>, 64>& board, Turn& turn)
+bool King::cell_is_free(const int i, const Chessboard& board, Turn& turn)
 {
     if (board[i])
         return false;
