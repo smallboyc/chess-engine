@@ -1,4 +1,5 @@
 #include "GameObjectManager.hpp"
+#include <iostream>
 #include "game2D/Piece.hpp"
 #include "glm/fwd.hpp"
 #include "utils.hpp"
@@ -71,40 +72,40 @@ void GameObjectManager::loadChessboard()
 }
 
 // This method is about to change (from & to logic not ok)
-void GameObjectManager::movePiece(std::array<std::unique_ptr<Piece>, 64>& chessboard, MoveProcessing& moveProcessing, float elapsedTime, float animationStartTime, bool isAnimating)
+void GameObjectManager::movePiece(std::array<std::unique_ptr<Piece>, 64>& chessboard, MoveProcessing& moveProcessing, float& elapsedTime, float& animationStartTime, bool& isAnimating)
 {
     auto [from, to] = moveProcessing;
     float t         = (elapsedTime - animationStartTime) / animationDuration;
+    // std::cout << animationStartTime << "\n";
     if (t >= 1.0f)
     {
-        t           = 1.0f;
+        t = 1.0f;
+        // end of animation
         isAnimating = false;
     }
     // update the piece position
     // if the piece is a knight, we need to elevate it
-    if (chessboard[from] && chessboard[from]->get_type() == Type::Knight)
+    if (isAnimating)
     {
-        if (t < 0.5f)
-            elevation = t;
-        else
-            elevation = 1.0f - t;
-    }
-
-    glm::vec3 startPos   = Renderer3D::world_position(Renderer3D::get_position(from), elevation);
-    glm::vec3 endPos     = Renderer3D::world_position(Renderer3D::get_position(to), elevation);
-    glm::vec3 currentPos = glm::mix(startPos, endPos, t);
-
-    for (auto& [type, piece] : m_pieces)
-    {
-        for (auto& [index, instance_index] : piece.m_board_instance_relation)
+        if (chessboard[to] && chessboard[to]->get_type() == Type::Knight)
         {
-            if (index == from)
+            if (t < 0.5f)
+                elevation = t;
+            else
+                elevation = 1.0f - t;
+        }
+
+        glm::vec3 startPos   = Renderer3D::world_position(Renderer3D::get_position(from), elevation);
+        glm::vec3 endPos     = Renderer3D::world_position(Renderer3D::get_position(to), elevation);
+        glm::vec3 currentPos = glm::mix(startPos, endPos, t);
+
+        for (auto& [type, piece] : m_pieces)
+        {
+            for (auto& [index, instance_index] : piece.m_board_instance_relation)
             {
-                piece.setTransform(instance_index, currentPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-                if (!isAnimating)
+                if (index == from)
                 {
-                    piece.m_board_instance_relation[to] = instance_index;
-                    piece.m_board_instance_relation.erase(from);
+                    piece.setTransform(instance_index, currentPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
                 }
             }
         }

@@ -45,34 +45,28 @@ void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::op
     std::chrono::duration<float> elapsed      = current_time - start_time;
     float                        elapsed_time = elapsed.count();
 
-    if (!isAnimating)
-    {
-        isAnimating        = true;
-        animationStartTime = elapsed_time;
-    }
     m_shader.use();
     // UPDATE
     if (move_processing.has_value())
     {
-        std::cout << move_processing->from << " -> " << move_processing->to << "\n";
-        // -> ANIMATION
-        // m_gameObjectManager.movePiece(chessboard, move_processing.value(), elapsed_time, animationStartTime, isAnimating);
+        if (!isAnimating)
+        {
+            isAnimating        = true;
+            animationStartTime = elapsed_time;
+        }
 
-        // if (!isAnimating)
-        // {
-        //     std::cout << "End of animation"
-        //               << "\n";
-        //     move_processing.reset(); // stop the move processing after animation
-        //     std::cout << "Update data !"
-        //               << "\n";
-        //     m_gameObjectManager.updatePiecesPositions(chessboard);
-        //     m_gameObjectManager.updatePiecesData();
-        // }
-        move_processing.reset(); // stop the move processing after animation
-        std::cout << "Update data !"
-                  << "\n";
-        m_gameObjectManager.updatePiecesPositions(chessboard);
-        m_gameObjectManager.updatePiecesData();
+        // -> ANIMATION
+        m_gameObjectManager.movePiece(chessboard, move_processing.value(), elapsed_time, animationStartTime, isAnimating);
+
+        // -> Update data after the animation's end
+        if (!isAnimating)
+        {
+            std::cout << "Update data after the end of animation!"
+                      << "\n";
+            m_gameObjectManager.updatePiecesPositions(chessboard);
+            m_gameObjectManager.updatePiecesData();
+            move_processing.reset(); // reset the move processing after animation (from / to reinitialized)
+        }
     }
     // RENDER
     m_gameObjectManager.renderGameObjects(m_shader);

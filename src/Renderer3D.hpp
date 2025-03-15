@@ -17,12 +17,12 @@ public:
     void           run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::optional<MoveProcessing>& move_processing);
 
 private:
-    glmax::Camera     m_camera{true};
-    glmax::Shader     m_shader{};
-    GameObjectManager m_gameObjectManager;
-    int               window_width;
-    int               window_height;
-    bool              isAnimating{};
-    float             animationStartTime{0.0f};
+    glmax::Camera                         m_camera{true};
+    glmax::Shader                         m_shader{};
+    GameObjectManager                     m_gameObjectManager;
+    int                                   window_width;
+    int                                   window_height;
+    bool                                  isAnimating{false};
+    float                                 animationStartTime{0.0f};
     std::chrono::steady_clock::time_point start_time;
 };
