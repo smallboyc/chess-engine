@@ -60,12 +60,12 @@ void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::op
     glDepthFunc(GL_LESS);
     // RENDER SKYBOX (end)
 
-    
     //
+    m_shader.use();
     m_shader.setUniformMatrix4fv("view", m_camera.get_view_matrix());
     m_shader.setUniformMatrix4fv("projection", projection);
 
-    m_shader.setUniform3fv("lightPos", glm::vec3(0.0f, 2.0f, 0.0f));
+    m_shader.setUniform3fv("lightPos", glm::vec3(5.0f, 5.0f, 5.0f));
     m_shader.setUniform3fv("viewPos", m_camera.get_position());
     m_shader.setUniform3fv("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
     //
@@ -74,7 +74,6 @@ void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::op
     std::chrono::duration<float> elapsed      = current_time - start_time;
     float                        elapsed_time = elapsed.count();
     //
-    m_shader.use();
     // UPDATE
     if (move_processing.has_value())
     {
