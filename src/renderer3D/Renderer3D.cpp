@@ -21,16 +21,16 @@ void Renderer3D::toggle_active_camera_callback(int key, int action)
 void Renderer3D::init(std::array<std::unique_ptr<Piece>, 64>& chessboard)
 {
     // init basic shader
-    m_shader.loadShader("model.vs.glsl", "model.fs.glsl");
+    m_basic_shader.load_shader("model.vs.glsl", "model.fs.glsl");
     // init skybox shader
-    m_skybox_shader.loadShader("skybox.vs.glsl", "skybox.fs.glsl");
-    m_skybox.loadCubeMaps();
-    m_skybox.setupBuffers();
+    m_skybox_shader.load_shader("skybox.vs.glsl", "skybox.fs.glsl");
+    m_skybox.load_cube_maps();
+    m_skybox.setup_buffers();
     // init all pieces
-    m_gameObjectManager.updatePiecesPositions(chessboard);
-    m_gameObjectManager.loadAllPieces();
+    m_game_object_manager.update_pieces_positions(chessboard);
+    m_game_object_manager.load_all_pieces();
     // init chessboard
-    m_gameObjectManager.loadChessboard();
+    m_game_object_manager.load_chessboard();
 }
 
 void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::optional<MoveProcessing>& move_processing, Animation& animation)
@@ -47,12 +47,12 @@ void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::op
     m_skybox_shader.use();
     glm::mat4 view = glm::mat4(glm::mat3(m_camera.get_view_matrix())); // Supprimer la translation
 
-    m_skybox_shader.setUniform1i("skybox", 0);
-    m_skybox_shader.setUniformMatrix4fv("view", view);
-    m_skybox_shader.setUniformMatrix4fv("projection", projection);
+    m_skybox_shader.set_uniform_1i("skybox", 0);
+    m_skybox_shader.set_uniform_matrix_4fv("view", view);
+    m_skybox_shader.set_uniform_matrix_4fv("projection", projection);
 
     m_skybox.m_vao.bind();
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_skybox.getTextureID());
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_skybox.get_textureID());
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
     m_skybox.m_vao.unbind();
 
@@ -61,13 +61,13 @@ void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::op
     // RENDER SKYBOX (end)
 
     //
-    m_shader.use();
-    m_shader.setUniformMatrix4fv("view", m_camera.get_view_matrix());
-    m_shader.setUniformMatrix4fv("projection", projection);
+    m_basic_shader.use();
+    m_basic_shader.set_uniform_matrix_4fv("view", m_camera.get_view_matrix());
+    m_basic_shader.set_uniform_matrix_4fv("projection", projection);
 
-    m_shader.setUniform3fv("lightPos", glm::vec3(5.0f, 5.0f, 5.0f));
-    m_shader.setUniform3fv("viewPos", m_camera.get_position());
-    m_shader.setUniform3fv("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    m_basic_shader.set_uniform_3fv("lightPos", glm::vec3(5.0f, 5.0f, 5.0f));
+    m_basic_shader.set_uniform_3fv("viewPos", m_camera.get_position());
+    m_basic_shader.set_uniform_3fv("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
     //
 
     auto                         current_time = std::chrono::steady_clock::now();
@@ -84,18 +84,18 @@ void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::op
         }
 
         // -> ANIMATION
-        m_gameObjectManager.movePiece(chessboard, move_processing.value(), elapsed_time, animation);
+        m_game_object_manager.move_piece(chessboard, move_processing.value(), elapsed_time, animation);
 
         // -> Update data after the animation's end
         if (!animation.isAnimating)
         {
             std::cout << "Update data after the end of animation!"
                       << "\n";
-            m_gameObjectManager.updatePiecesPositions(chessboard);
-            m_gameObjectManager.updatePiecesData();
+            m_game_object_manager.update_pieces_positions(chessboard);
+            m_game_object_manager.update_pieces_data();
             move_processing.reset(); // reset the move processing after animation (from / to reinitialized)
         }
     }
     // RENDER OBJECTS (PIECE, CHESSBOARD)
-    m_gameObjectManager.renderGameObjects(m_shader);
+    m_game_object_manager.render_game_objects(m_basic_shader);
 }

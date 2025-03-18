@@ -11,7 +11,7 @@ class Renderer3D {
 public:
     Renderer3D(int width, int height)
         : window_width(width), window_height(height), start_time(std::chrono::steady_clock::now()){};
-    glmax::Camera& useCamera() { return m_camera; };
+    glmax::Camera& use_camera() { return m_camera; };
     void           window_size_callback(int width, int height);
     void           toggle_active_camera_callback(int key, int action);
     void           init(std::array<std::unique_ptr<Piece>, 64>& chessboard);
@@ -19,9 +19,9 @@ public:
 
 private:
     glmax::Camera                         m_camera{true};
-    glmax::Shader                         m_shader{};
+    glmax::Shader                         m_basic_shader{};
     glmax::Shader                         m_skybox_shader{};
-    GameObjectManager                     m_gameObjectManager;
+    GameObjectManager                     m_game_object_manager;
     Skybox                                m_skybox;
     int                                   window_width;
     int                                   window_height;

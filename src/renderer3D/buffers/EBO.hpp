@@ -8,7 +8,7 @@ public:
     void init();
     void bind() const;
     void unbind() const;
-    void setData(const void* data, GLsizeiptr size);
+    void set_data(const void* data, GLsizeiptr size);
 private:
     GLuint m_id;
 };

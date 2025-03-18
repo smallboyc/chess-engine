@@ -14,19 +14,19 @@ public:
 
     void   use() const;
     GLuint getID() const;
-    void   loadShader(const std::string& vertexPath, const std::string& fragmentPath);
-    void   setUniformMatrix4fv(const std::string& name, const glm::mat4& value);
-    void   setUniform3fv(const std::string& name, const glm::vec3& value);
-    void   setUniform1f(const std::string& name, float value);
-    void   setUniform1i(const std::string& name, int value);
+    void   load_shader(const std::string& vertexPath, const std::string& fragmentPath);
+    void   set_uniform_matrix_4fv(const std::string& name, const glm::mat4& value);
+    void   set_uniform_3fv(const std::string& name, const glm::vec3& value);
+    void   set_uniform_1f(const std::string& name, float value);
+    void   set_uniform_1i(const std::string& name, int value);
 
 private:
     GLuint                                 m_programID;
-    std::unordered_map<std::string, GLint> m_uniformCache;
+    std::unordered_map<std::string, GLint> m_uniform_cache;
     //
-    GLuint               compileShader(const std::string& path, GLenum type);
-    std::string          readFile(const std::string& path);
-    std::optional<GLint> getUniformLocation(const std::string& name);
+    GLuint               compile_shader(const std::string& path, GLenum type);
+    std::string          read_file(const std::string& path);
+    std::optional<GLint> get_uniform_location(const std::string& name);
 };
 
 } // namespace glmax

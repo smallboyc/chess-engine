@@ -4,9 +4,9 @@
 namespace glmax {
 
 struct Vertex {
-    glm::vec3 _position;
-    glm::vec3 _normal;
-    glm::vec2 _tex_coord;
+    glm::vec3 m_position;
+    glm::vec3 m_normal;
+    glm::vec2 m_tex_coord;
 };
 
 } // namespace glmax

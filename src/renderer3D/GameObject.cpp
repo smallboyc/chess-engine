@@ -6,29 +6,29 @@ void GameObject::render(glmax::Shader& shader) const
 {
     m_vao.bind();
     // On boucle sur chaque sous-maille (submesh) pour dessiner ses instances
-    for (const glmax::Submesh& submesh : m_mesh.getSubmeshes())
+    for (const glmax::Submesh& submesh : m_mesh.get_submeshes())
     {
-        const glmax::Material& material = m_mesh.getMaterials().at(submesh.m_material_id);
+        const glmax::Material& material = m_mesh.get_materials().at(submesh.m_material_id);
 
         // Configurer les uniformes pour les propriétés du matériau
         // shader.setUniform3fv("Kd", glm::vec3(0.961, 0.859, 0.635));
-        shader.setUniform3fv("Ka", material.m_Ka);
-        shader.setUniform3fv("Ks", material.m_Ks);
-        shader.setUniform1f("Ns", material.m_Ns);
+        shader.set_uniform_3fv("Ka", material.m_Ka);
+        shader.set_uniform_3fv("Ks", material.m_Ks);
+        shader.set_uniform_1f("Ns", material.m_Ns);
 
         if (material.m_hasMapKd)
         {
-            shader.setUniform1i("map_Kd", material.m_mapKd.getID());
+            shader.set_uniform_1i("map_Kd", material.m_mapKd.getID());
             material.m_mapKd.bind(material.m_mapKd.getID());
-            shader.setUniform1i("useTexture", true);
+            shader.set_uniform_1i("useTexture", true);
         }
         else
         {
-            shader.setUniform1i("useTexture", false);
+            shader.set_uniform_1i("useTexture", false);
         }
         // Ici, on utilise glDrawElementsInstanced pour dessiner toutes les instances
-        if (m_modelMatrices.size() > 1)
-            glDrawElementsInstanced(GL_TRIANGLES, submesh.m_index_count, GL_UNSIGNED_INT, (const GLvoid*)(submesh.m_index_offset * sizeof(uint32_t)), m_modelMatrices.size());
+        if (m_model_matrices.size() > 1)
+            glDrawElementsInstanced(GL_TRIANGLES, submesh.m_index_count, GL_UNSIGNED_INT, (const GLvoid*)(submesh.m_index_offset * sizeof(uint32_t)), m_model_matrices.size());
         else
             glDrawElements(GL_TRIANGLES, submesh.m_index_count, GL_UNSIGNED_INT, (const GLvoid*)(submesh.m_index_offset * sizeof(uint32_t)));
         //
@@ -39,29 +39,29 @@ void GameObject::render(glmax::Shader& shader) const
     m_vao.unbind();
 }
 
-void GameObject::setTransform(const unsigned int index, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale)
+void GameObject::set_transform(const unsigned int index, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale)
 {
     glm::mat4 translation  = glm::translate(glm::mat4(1.0f), position);
     glm::mat4 rotationX    = glm::rotate(glm::mat4(1.0f), rotation.x, glm::vec3(1, 0, 0));
     glm::mat4 rotationY    = glm::rotate(glm::mat4(1.0f), rotation.y, glm::vec3(0, 1, 0));
     glm::mat4 rotationZ    = glm::rotate(glm::mat4(1.0f), rotation.z, glm::vec3(0, 0, 1));
     glm::mat4 scaling      = glm::scale(glm::mat4(1.0f), scale);
-    m_modelMatrices[index] = translation * rotationX * rotationY * rotationZ * scaling;
+    m_model_matrices[index] = translation * rotationX * rotationY * rotationZ * scaling;
     //
-    updateMatInstancingBuffer();
+    update_mat_instancing_buffer();
 }
 
-void GameObject::setupBuffers()
+void GameObject::setup_buffers()
 {
     // Lier et configurer les buffers pour les pions (VBO, EBO)
     m_vbo.init();
     m_vbo.bind();
-    m_vbo.setData(m_mesh.getVertices().data(), m_mesh.getVertices().size() * sizeof(glmax::Vertex));
+    m_vbo.set_data(m_mesh.get_vertices().data(), m_mesh.get_vertices().size() * sizeof(glmax::Vertex));
     m_vbo.unbind();
 
     m_ebo.init();
     m_ebo.bind();
-    m_ebo.setData(m_mesh.getIndices().data(), m_mesh.getIndices().size() * sizeof(uint32_t));
+    m_ebo.set_data(m_mesh.get_indices().data(), m_mesh.get_indices().size() * sizeof(uint32_t));
     m_ebo.unbind();
 
     // Lier les matrices d'instance aux attributs de vertex
@@ -72,20 +72,20 @@ void GameObject::setupBuffers()
 
     // Attributs de position, normal et texture pour chaque pion
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glmax::Vertex), (const GLvoid*)offsetof(glmax::Vertex, _position));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glmax::Vertex), (const GLvoid*)offsetof(glmax::Vertex, m_position));
 
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(glmax::Vertex), (const GLvoid*)offsetof(glmax::Vertex, _normal));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(glmax::Vertex), (const GLvoid*)offsetof(glmax::Vertex, m_normal));
 
     glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(glmax::Vertex), (const GLvoid*)offsetof(glmax::Vertex, _tex_coord));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(glmax::Vertex), (const GLvoid*)offsetof(glmax::Vertex, m_tex_coord));
 
     // Lier et configurer le buffer pour les matrices d'instance
-    if (!m_modelMatrices.empty())
+    if (!m_model_matrices.empty())
     {
         m_instanceVBO.init();
         m_instanceVBO.bind();
-        m_instanceVBO.setData(m_modelMatrices.data(), m_modelMatrices.size() * sizeof(glm::mat4));
+        m_instanceVBO.set_data(m_model_matrices.data(), m_model_matrices.size() * sizeof(glm::mat4));
 
         // Lier les matrices d'instance aux attributs de vertex
         glEnableVertexAttribArray(3);
@@ -107,11 +107,11 @@ void GameObject::setupBuffers()
         // Nettoyage
         m_instanceVBO.unbind();
     }
-    if (!m_pieceColors.empty())
+    if (!m_piece_colors.empty())
     {
         m_colorVBO.init();
         m_colorVBO.bind();
-        m_colorVBO.setData(m_pieceColors.data(), m_pieceColors.size() * sizeof(glm::vec3));
+        m_colorVBO.set_data(m_piece_colors.data(), m_piece_colors.size() * sizeof(glm::vec3));
         glEnableVertexAttribArray(7);
         glVertexAttribPointer(7, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (const GLvoid*)0);
         glVertexAttribDivisor(7, 1);
@@ -120,51 +120,51 @@ void GameObject::setupBuffers()
     m_vao.unbind();
 }
 
-void GameObject::updateMatInstancingBuffer()
+void GameObject::update_mat_instancing_buffer()
 {
     m_vao.bind();
     //
     m_instanceVBO.bind();
-    m_instanceVBO.setData(m_modelMatrices.data(), m_modelMatrices.size() * sizeof(glm::mat4));
+    m_instanceVBO.set_data(m_model_matrices.data(), m_model_matrices.size() * sizeof(glm::mat4));
     m_instanceVBO.unbind();
     //
     m_vao.unbind();
 }
 
-void GameObject::updateColorInstancingBuffer()
+void GameObject::update_color_instancing_buffer()
 {
     m_vao.bind();
     //
     m_colorVBO.bind();
-    m_colorVBO.setData(m_pieceColors.data(), m_pieceColors.size() * sizeof(glm::vec3));
+    m_colorVBO.set_data(m_piece_colors.data(), m_piece_colors.size() * sizeof(glm::vec3));
     m_colorVBO.unbind();
     //
     m_vao.unbind();
 }
 
-void GameObject::updateBoardRelations(int i)
+void GameObject::update_board_relations(int i)
 {
-    m_board_instance_relation[i] = m_modelMatrices.size() - 1;
+    m_board_instance_relation[i] = m_model_matrices.size() - 1;
 }
 
-void GameObject::loadMesh(const std::string& path, const std::string& name)
+void GameObject::load_mesh(const std::string& path, const std::string& name)
 {
     m_mesh.load(path, name);
 }
 
-void GameObject::clearInstancingBuffers()
+void GameObject::clear_instancing_buffers()
 {
-    m_modelMatrices.clear();
-    m_pieceColors.clear();
+    m_model_matrices.clear();
+    m_piece_colors.clear();
     m_board_instance_relation.clear();
 }
 
-void GameObject::pushMatrix(const glm::vec3& position)
+void GameObject::push_matrix(const glm::vec3& position)
 {
-    m_modelMatrices.push_back(glm::translate(glm::mat4(1.0f), position));
+    m_model_matrices.push_back(glm::translate(glm::mat4(1.0f), position));
 }
 
-void GameObject::pushColor(const glm::vec3& color)
+void GameObject::push_color(const glm::vec3& color)
 {
-    m_pieceColors.push_back(color);
+    m_piece_colors.push_back(color);
 }

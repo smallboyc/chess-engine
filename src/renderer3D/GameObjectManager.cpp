@@ -3,24 +3,24 @@
 #include "glm/fwd.hpp"
 #include "utils.hpp"
 
-void GameObjectManager::updatePiecesData()
+void GameObjectManager::update_pieces_data()
 {
     for (auto& [type, piece] : m_pieces)
     {
-        piece.updateMatInstancingBuffer();
-        piece.updateColorInstancingBuffer();
+        piece.update_mat_instancing_buffer();
+        piece.update_color_instancing_buffer();
     }
 }
 
 // A chaque frame, on met à jour l'affichage de notre jeu 3D, en analysant le board envoyé par le jeu 2D.
-void GameObjectManager::updatePiecesPositions(std::array<std::unique_ptr<Piece>, 64>& chessboard)
+void GameObjectManager::update_pieces_positions(std::array<std::unique_ptr<Piece>, 64>& chessboard)
 {
     // On vide toutes les positions des pieces
     if (!m_pieces.empty())
     {
         for (auto& [type, piece] : m_pieces)
         {
-            piece.clearInstancingBuffers();
+            piece.clear_instancing_buffers();
         }
     }
     // On met à jour les gameObject en fonction du board
@@ -33,47 +33,47 @@ void GameObjectManager::updatePiecesPositions(std::array<std::unique_ptr<Piece>,
             glm::vec3 position  = Renderer3D::world_position(Renderer3D::get_position(i));
             glm::vec3 color     = chessboard[i]->get_vec_color();
             //
-            m_pieces[pieceType].pushMatrix(position);
-            m_pieces[pieceType].pushColor(color);
+            m_pieces[pieceType].push_matrix(position);
+            m_pieces[pieceType].push_color(color);
             // WIP ? keep track of board index with model matrix index
-            m_pieces[pieceType].updateBoardRelations(i);
+            m_pieces[pieceType].update_board_relations(i);
         }
         // Si la case est vide, on vérifie si pour chaque gameObject, i est dans m_board_instance_relation, dans ce cas on retire de m_board_instance_relation et de m_modelMatrices.
     }
 }
 
-void GameObjectManager::loadAllPieces()
+void GameObjectManager::load_all_pieces()
 {
     for (auto& [type, piece] : m_pieces)
     {
         if (type == Type::Pawn)
-            piece.loadMesh("pawn/pawn.obj", "pawn");
+            piece.load_mesh("pawn/pawn.obj", "pawn");
         else if (type == Type::Bishop)
-            piece.loadMesh("bishop/bishop.obj", "bishop");
+            piece.load_mesh("bishop/bishop.obj", "bishop");
         else if (type == Type::Rook)
-            piece.loadMesh("rook/rook.obj", "rook");
+            piece.load_mesh("rook/rook.obj", "rook");
         else if (type == Type::Knight)
-            piece.loadMesh("knight/knight.obj", "knight");
+            piece.load_mesh("knight/knight.obj", "knight");
         else if (type == Type::Queen)
-            piece.loadMesh("queen/queen.obj", "queen");
+            piece.load_mesh("queen/queen.obj", "queen");
         else if (type == Type::King)
-            piece.loadMesh("king/king.obj", "king");
-        piece.setupBuffers();
+            piece.load_mesh("king/king.obj", "king");
+        piece.setup_buffers();
     }
 }
 
-void GameObjectManager::loadChessboard()
+void GameObjectManager::load_chessboard()
 {
     glm::vec3 centerPos{glm::vec3(0.0f, 0.0f, 0.0f)};
-    m_chessboard.pushMatrix(centerPos);
-    m_chessboard.loadMesh("chessboard/chessboard.obj", "chessboard");
-    m_chessboard.setupBuffers();
+    m_chessboard.push_matrix(centerPos);
+    m_chessboard.load_mesh("chessboard/chessboard.obj", "chessboard");
+    m_chessboard.setup_buffers();
 }
 
-void GameObjectManager::movePiece(std::array<std::unique_ptr<Piece>, 64>& chessboard, MoveProcessing& moveProcessing, float& elapsedTime, Animation& animation)
+void GameObjectManager::move_piece(std::array<std::unique_ptr<Piece>, 64>& chessboard, MoveProcessing& moveProcessing, float& elapsedTime, Animation& animation)
 {
     auto [from, to] = moveProcessing;
-    float t         = (elapsedTime - animation.animationStartTime) / animationDuration;
+    float t         = (elapsedTime - animation.animationStartTime) / animation_duration;
     // std::cout << animationStartTime << "\n";
     if (t >= 1.0f)
     {
@@ -103,14 +103,14 @@ void GameObjectManager::movePiece(std::array<std::unique_ptr<Piece>, 64>& chessb
             {
                 if (index == from)
                 {
-                    piece.setTransform(instance_index, currentPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+                    piece.set_transform(instance_index, currentPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
                 }
             }
         }
     }
 }
 
-void GameObjectManager::renderGameObjects(glmax::Shader& shader)
+void GameObjectManager::render_game_objects(glmax::Shader& shader)
 {
     m_chessboard.render(shader);
 

@@ -4,17 +4,17 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-void Skybox::setupBuffers()
+void Skybox::setup_buffers()
 {
     // Initialiser et configurer les buffers pour les pions (VBO, EBO)
     m_vbo.init();
     m_vbo.bind();
-    m_vbo.setData(m_cube_coordinates.data(), m_cube_coordinates.size() * sizeof(glm::vec3));
+    m_vbo.set_data(m_cube_coordinates.data(), m_cube_coordinates.size() * sizeof(glm::vec3));
     m_vbo.unbind();
 
     m_ebo.init();
     m_ebo.bind();
-    m_ebo.setData(m_cube_indices.data(), m_cube_indices.size() * sizeof(unsigned int));
+    m_ebo.set_data(m_cube_indices.data(), m_cube_indices.size() * sizeof(unsigned int));
     m_ebo.unbind();
 
     // Initialiser et configurer le VAO
@@ -30,7 +30,7 @@ void Skybox::setupBuffers()
     m_vao.unbind();
 }
 
-void Skybox::loadCubeMaps()
+void Skybox::load_cube_maps()
 {
     // Générer une texture pour la cubemap
     glGenTextures(1, &m_textureID);

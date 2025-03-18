@@ -23,7 +23,7 @@ void EBO::unbind() const
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void EBO::setData(const void* data, GLsizeiptr size)
+void EBO::set_data(const void* data, GLsizeiptr size)
 {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 }

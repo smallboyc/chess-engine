@@ -10,9 +10,9 @@
 class Skybox {
 public:
     Skybox() = default;
-    void         setupBuffers();
-    void         loadCubeMaps();
-    unsigned int getTextureID() const { return m_textureID; };
+    void         setup_buffers();
+    void         load_cube_maps();
+    unsigned int get_textureID() const { return m_textureID; };
     VAO          m_vao;
 
 private:

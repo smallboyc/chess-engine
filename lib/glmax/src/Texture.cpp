@@ -8,7 +8,7 @@ namespace glmax {
 
 Texture::Texture(const std::string& filePath)
 {
-    loadTexture(filePath);
+    load_texture(filePath);
 }
 
 Texture::~Texture()
@@ -19,7 +19,7 @@ Texture::~Texture()
     }
 }
 
-void Texture::loadTexture(const std::string& filePath)
+void Texture::load_texture(const std::string& filePath)
 {
     int width      = 0;
     int height     = 0;

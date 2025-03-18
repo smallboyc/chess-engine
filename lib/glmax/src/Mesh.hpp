@@ -20,10 +20,10 @@ private:
 
 public:
     Mesh() = default;
-    void                         load(const std::string& objPath, const std::string& mtlPath);
-    std::vector<Vertex>          getVertices() const { return m_vertices; };
-    std::vector<unsigned int>    getIndices() const { return m_indices; };
-    const std::vector<Material>& getMaterials() const { return m_materials; };
-    std::vector<Submesh>         getSubmeshes() const { return m_submeshes; };
+    void                         load(const std::string& obj_path, const std::string& mtl_path);
+    std::vector<Vertex>          get_vertices() const { return m_vertices; };
+    std::vector<unsigned int>    get_indices() const { return m_indices; };
+    const std::vector<Material>& get_materials() const { return m_materials; };
+    std::vector<Submesh>         get_submeshes() const { return m_submeshes; };
 };
 } // namespace glmax

@@ -14,7 +14,7 @@ public:
     explicit Texture(const std::string& filePath);
     ~Texture();
 
-    void   loadTexture(const std::string& filePath);
+    void   load_texture(const std::string& filePath);
     void   bind(unsigned int slot = 0) const;
     void   unbind() const;
     GLuint getID() const { return m_textureID; }

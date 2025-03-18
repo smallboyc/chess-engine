@@ -9,16 +9,17 @@
 class GameObject {
 public:
     void render(glmax::Shader& shader) const;
-    void setTransform(unsigned int index, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale);
-    void loadMesh(const std::string& path, const std::string& name);
-    void setupBuffers();
+    void set_transform(unsigned int index, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale);
+    void load_mesh(const std::string& path, const std::string& name);
+    void setup_buffers();
     // have better control over instance buffers
-    void                                           updateMatInstancingBuffer();
-    void                                           updateColorInstancingBuffer();
-    void                                           clearInstancingBuffers();
-    void                                           pushMatrix(const glm::vec3& position);
-    void                                           pushColor(const glm::vec3& color);
-    void                                           updateBoardRelations(int i);
+    void                                           update_mat_instancing_buffer();
+    void                                           update_color_instancing_buffer();
+    void                                           clear_instancing_buffers();
+    void                                           push_matrix(const glm::vec3& position);
+    void                                           push_color(const glm::vec3& color);
+    void                                           update_board_relations(int i);
+    // TODO(smallboyc): m_board_instance_relation must be private
     std::unordered_map<unsigned int, unsigned int> m_board_instance_relation; // board index / model matrix index in m_modelMatrices
 
 private:
@@ -34,6 +35,6 @@ private:
     VBO m_instanceVBO;
     VBO m_colorVBO;
     // Dis quels indices correspond à la matrice stocké sur le board
-    std::vector<glm::mat4> m_modelMatrices;
-    std::vector<glm::vec3> m_pieceColors;
+    std::vector<glm::mat4> m_model_matrices;
+    std::vector<glm::vec3> m_piece_colors;
 };
