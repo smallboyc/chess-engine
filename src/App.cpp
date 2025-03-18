@@ -21,7 +21,7 @@ int main()
             ImGui::GetStyle().ItemSpacing = ImVec2(0.0f, 0.0f); 
             // load_font("../../assets/fonts/PoetsenOne-Regular.ttf", 20.0f);
              //GAME 2D
-            chess2D.load_all_textures("../../assets/images/");
+            chess2D.load_all_textures("../../assets/images/game2D/");
             //RENDER 3D
             renderer3D.init(chess2D.get_chessboard()); },
             .loop = [&]() { 

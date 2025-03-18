@@ -5,6 +5,7 @@
 #include "Camera.hpp"
 #include "GameObjectManager.hpp"
 #include "Shader.hpp"
+#include "renderer3D/Skybox.hpp"
 
 class Renderer3D {
 public:
@@ -19,7 +20,9 @@ public:
 private:
     glmax::Camera                         m_camera{true};
     glmax::Shader                         m_shader{};
+    glmax::Shader                         m_skybox_shader{};
     GameObjectManager                     m_gameObjectManager;
+    Skybox                                m_skybox;
     int                                   window_width;
     int                                   window_height;
     std::chrono::steady_clock::time_point start_time;
