@@ -15,7 +15,7 @@ public:
     void           window_size_callback(int width, int height);
     void           toggle_active_camera_callback(int key, int action);
     void           init(std::array<std::unique_ptr<Piece>, 64>& chessboard);
-    void           run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::optional<MoveProcessing>& move_processing, Animation& animation);
+    void           run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::optional<MoveProcessing>& move_processing, Animation& animation, Settings& Settings);
 
 private:
     glmax::Camera                         m_camera{true};

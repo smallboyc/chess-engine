@@ -1,8 +1,11 @@
 #include "GameObject.hpp"
+#include <iostream>
 #include "Texture.hpp"
 #include "glm/ext/matrix_transform.hpp"
+#include "glm/fwd.hpp"
+#include "renderer3D/utils.hpp"
 
-void GameObject::render(glmax::Shader& shader) const
+void GameObject::render(glmax::Shader& shader, Settings& settings) const
 {
     m_vao.bind();
     // On boucle sur chaque sous-maille (submesh) pour dessiner ses instances
@@ -10,20 +13,25 @@ void GameObject::render(glmax::Shader& shader) const
     {
         const glmax::Material& material = m_mesh.get_materials().at(submesh.m_material_id);
 
-        // Configurer les uniformes pour les propriétés du matériau
-        // shader.setUniform3fv("Kd", glm::vec3(0.961, 0.859, 0.635));
         shader.set_uniform_3fv("Ka", material.m_Ka);
         shader.set_uniform_3fv("Ks", material.m_Ks);
         shader.set_uniform_1f("Ns", material.m_Ns);
 
         if (material.m_hasMapKd)
         {
+            glm::vec3 custom_cell_color = Renderer3D::imgui_vec4_to_glm_vec3(settings.get_secondary_color());
+            if (material.m_name == "BLACK_CELL")
+            {
+                custom_cell_color = Renderer3D::imgui_vec4_to_glm_vec3(settings.get_primary_color());
+            }
+            shader.set_uniform_3fv("colorFactor", custom_cell_color);
             shader.set_uniform_1i("map_Kd", material.m_mapKd.getID());
             material.m_mapKd.bind(material.m_mapKd.getID());
             shader.set_uniform_1i("useTexture", true);
         }
         else
         {
+            shader.set_uniform_3fv("colorFactor", glm::vec3(1.0f, 1.0f, 1.0f));
             shader.set_uniform_1i("useTexture", false);
         }
         // Ici, on utilise glDrawElementsInstanced pour dessiner toutes les instances
@@ -41,11 +49,11 @@ void GameObject::render(glmax::Shader& shader) const
 
 void GameObject::set_transform(const unsigned int index, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale)
 {
-    glm::mat4 translation  = glm::translate(glm::mat4(1.0f), position);
-    glm::mat4 rotationX    = glm::rotate(glm::mat4(1.0f), rotation.x, glm::vec3(1, 0, 0));
-    glm::mat4 rotationY    = glm::rotate(glm::mat4(1.0f), rotation.y, glm::vec3(0, 1, 0));
-    glm::mat4 rotationZ    = glm::rotate(glm::mat4(1.0f), rotation.z, glm::vec3(0, 0, 1));
-    glm::mat4 scaling      = glm::scale(glm::mat4(1.0f), scale);
+    glm::mat4 translation   = glm::translate(glm::mat4(1.0f), position);
+    glm::mat4 rotationX     = glm::rotate(glm::mat4(1.0f), rotation.x, glm::vec3(1, 0, 0));
+    glm::mat4 rotationY     = glm::rotate(glm::mat4(1.0f), rotation.y, glm::vec3(0, 1, 0));
+    glm::mat4 rotationZ     = glm::rotate(glm::mat4(1.0f), rotation.z, glm::vec3(0, 0, 1));
+    glm::mat4 scaling       = glm::scale(glm::mat4(1.0f), scale);
     m_model_matrices[index] = translation * rotationX * rotationY * rotationZ * scaling;
     //
     update_mat_instancing_buffer();

@@ -109,12 +109,12 @@ void GameObjectManager::move_piece(std::array<std::unique_ptr<Piece>, 64>& chess
     }
 }
 
-void GameObjectManager::render_game_objects(glmax::Shader& shader)
+void GameObjectManager::render_game_objects(glmax::Shader& shader, Settings& settings)
 {
-    m_chessboard.render(shader);
+    m_chessboard.render(shader,settings);
 
     for (auto& [type, piece] : m_pieces)
     {
-        piece.render(shader);
+        piece.render(shader,settings);
     }
 }

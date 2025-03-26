@@ -15,7 +15,7 @@ public:
     void load_all_pieces();
     void load_chessboard();
     void move_piece(std::array<std::unique_ptr<Piece>, 64>& chessboard, MoveProcessing& moveProcessing, float& elapsedTime, Animation& animation);
-    void render_game_objects(glmax::Shader& shader);
+    void render_game_objects(glmax::Shader& shader, Settings& settings);
 
 private:
     std::unordered_map<Type, GameObject> m_pieces;

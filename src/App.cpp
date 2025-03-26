@@ -33,7 +33,7 @@ int main()
                 chess2D.play(settings, animation);
                 ImGui::End();
                 //RENDER 3D
-                renderer3D.run(chess2D.get_chessboard(), chess2D.get_move_processing(), animation);
+                renderer3D.run(chess2D.get_chessboard(), chess2D.get_move_processing(), animation, settings);
             // user windows
             settings.show();
             game_tracker.show(chess2D); },

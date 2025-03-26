@@ -33,11 +33,17 @@ void Renderer3D::init(std::array<std::unique_ptr<Piece>, 64>& chessboard)
     m_game_object_manager.load_chessboard();
 }
 
-void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::optional<MoveProcessing>& move_processing, Animation& animation)
+void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::optional<MoveProcessing>& move_processing, Animation& animation, Settings& settings)
 {
     glClearColor(0.847f, 0.82f, 0.929f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
+
+    // TIME
+    auto                         current_time = std::chrono::steady_clock::now();
+    std::chrono::duration<float> elapsed      = current_time - start_time;
+    float                        elapsed_time = elapsed.count();
+
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(window_width) / static_cast<float>(window_height), 0.1f, 100.0f);
 
     // RENDER SKYBOX (start)
@@ -60,20 +66,26 @@ void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::op
     glDepthFunc(GL_LESS);
     // RENDER SKYBOX (end)
 
-    //
+    // RENDER OBJECTS (PIECE, CHESSBOARD)
     m_basic_shader.use();
     m_basic_shader.set_uniform_matrix_4fv("view", m_camera.get_view_matrix());
     m_basic_shader.set_uniform_matrix_4fv("projection", projection);
 
-    m_basic_shader.set_uniform_3fv("lightPos", glm::vec3(5.0f, 5.0f, 5.0f));
-    m_basic_shader.set_uniform_3fv("viewPos", m_camera.get_position());
-    m_basic_shader.set_uniform_3fv("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-    //
+    // Lights
+    m_basic_shader.set_uniform_3fv("lightPos1", glm::vec3(5.0f, 5.0f, 5.0f));
+    m_basic_shader.set_uniform_3fv("lightColor1", glm::vec3(1.0f, 1.0f, 1.0f));
 
-    auto                         current_time = std::chrono::steady_clock::now();
-    std::chrono::duration<float> elapsed      = current_time - start_time;
-    float                        elapsed_time = elapsed.count();
-    //
+    // Mise à jour de la lumière mobile (position et couleur)
+    float lightSpeed = 0.5f;
+    float radius     = 5.0f;
+    // Animation de la lumière mobile (position)
+    glm::vec3 lightPos2   = glm::vec3(radius * sin(elapsed_time * lightSpeed), 5.0f, radius * cos(elapsed_time * lightSpeed));
+    glm::vec3 lightColor2 = glm::vec3(0.941, 0.851, 0.122);     // Couleur oscillant entre rouge et vert
+    m_basic_shader.set_uniform_3fv("lightPos2", lightPos2);     // Lumière mobile
+    m_basic_shader.set_uniform_3fv("lightColor2", lightColor2); // Lumière avec couleur dynamique
+
+    m_basic_shader.set_uniform_3fv("viewPos", m_camera.get_position());
+
     // UPDATE
     if (move_processing.has_value())
     {
@@ -97,5 +109,5 @@ void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::op
         }
     }
     // RENDER OBJECTS (PIECE, CHESSBOARD)
-    m_game_object_manager.render_game_objects(m_basic_shader);
+    m_game_object_manager.render_game_objects(m_basic_shader,settings);
 }
