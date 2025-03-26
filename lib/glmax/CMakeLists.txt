@@ -15,14 +15,16 @@ target_include_directories(glmax PUBLIC src third-party)
 target_link_libraries(glmax PRIVATE stb_image)
 
 # Add glm
-include(FetchContent)
-FetchContent_Declare(
-    glm
-    GIT_REPOSITORY https://github.com/g-truc/glm.git
-    GIT_TAG        bf71a834948186f4097caa076cd2663c69a10e1e
-)
-FetchContent_MakeAvailable(glm)
-target_link_libraries(${PROJECT_NAME} PUBLIC glm::glm)
+target_include_directories(glmax PUBLIC third-party/glm)
+
+# include(FetchContent)
+# FetchContent_Declare(
+#     glm
+#     GIT_REPOSITORY https://github.com/g-truc/glm.git
+#     GIT_TAG        bf71a834948186f4097caa076cd2663c69a10e1e
+# )
+# FetchContent_MakeAvailable(glm)
+# target_link_libraries(${PROJECT_NAME} PUBLIC glm::glm)
 
 # Add quick_imgui for glad
 target_link_libraries(glmax PUBLIC quick_imgui)

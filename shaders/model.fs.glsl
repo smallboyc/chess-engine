@@ -7,9 +7,9 @@ in vec2 TexCoords;
 out vec4 FragColor;
 
 uniform vec3 lightPos;
-uniform vec3 viewPos;
 uniform vec3 lightColor;
 //
+uniform vec3 viewPos;
 uniform vec3 Ka;
 uniform vec3 Ks;
 uniform float Ns;

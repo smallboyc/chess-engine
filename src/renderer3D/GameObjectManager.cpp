@@ -35,10 +35,9 @@ void GameObjectManager::update_pieces_positions(std::array<std::unique_ptr<Piece
             //
             m_pieces[pieceType].push_matrix(position);
             m_pieces[pieceType].push_color(color);
-            // WIP ? keep track of board index with model matrix index
+            //
             m_pieces[pieceType].update_board_relations(i);
         }
-        // Si la case est vide, on vérifie si pour chaque gameObject, i est dans m_board_instance_relation, dans ce cas on retire de m_board_instance_relation et de m_modelMatrices.
     }
 }
 
