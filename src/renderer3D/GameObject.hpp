@@ -20,8 +20,8 @@ public:
     void push_matrix(const glm::vec3& position);
     void push_color(const glm::vec3& color);
     void update_board_relations(int i);
-    // TODO(smallboyc): m_board_instance_relation must be private
-    std::unordered_map<unsigned int, unsigned int> m_board_instance_relation; // board index / model matrix index in m_modelMatrices
+    //
+    const std::unordered_map<unsigned int, unsigned int>& get_board_instance_relation() { return m_board_instance_relation; }
 
 private:
     // single mesh
@@ -36,6 +36,7 @@ private:
     VBO m_instanceVBO;
     VBO m_colorVBO;
     // Dis quels indices correspond à la matrice stocké sur le board
-    std::vector<glm::mat4> m_model_matrices;
-    std::vector<glm::vec3> m_piece_colors;
+    std::vector<glm::mat4>                         m_model_matrices;
+    std::vector<glm::vec3>                         m_piece_colors;
+    std::unordered_map<unsigned int, unsigned int> m_board_instance_relation; // board index / model matrix index in m_modelMatrices
 };

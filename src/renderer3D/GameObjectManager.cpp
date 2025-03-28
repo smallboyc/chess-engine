@@ -98,7 +98,7 @@ void GameObjectManager::move_piece(std::array<std::unique_ptr<Piece>, 64>& chess
 
         for (auto& [type, piece] : m_pieces)
         {
-            for (auto& [index, instance_index] : piece.m_board_instance_relation)
+            for (auto& [index, instance_index] : piece.get_board_instance_relation())
             {
                 if (index == from)
                 {

@@ -1,6 +1,22 @@
 #pragma once
 #include <array>
-#include "utils.hpp"
+
+enum class Direction {
+    Up          = -1,
+    Down        = 1,
+    Left        = -1,
+    Right       = 1,
+    None        = 0,
+    KnightUp    = -2,
+    KnightDown  = 2,
+    KnightLeft  = 2,
+    KnightRight = -2,
+};
+
+struct Move {
+    Direction dx{};
+    Direction dy{};
+};
 
 const std::array<Move, 8> king_moves = {
     {{Direction::Left, Direction::Up},

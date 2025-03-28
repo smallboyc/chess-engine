@@ -80,7 +80,7 @@ void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::op
     float radius     = 5.0f;
     // Animation de la lumière mobile (position)
     glm::vec3 lightPos2   = glm::vec3(radius * sin(elapsed_time * lightSpeed), 5.0f, radius * cos(elapsed_time * lightSpeed));
-    glm::vec3 lightColor2 = glm::vec3(0.941, 0.851, 0.122);     // Couleur oscillant entre rouge et vert
+    glm::vec3 lightColor2 = glm::vec3(1.0f, 1.0f, 1.0f);     // Couleur oscillant entre rouge et vert
     m_basic_shader.set_uniform_3fv("lightPos2", lightPos2);     // Lumière mobile
     m_basic_shader.set_uniform_3fv("lightColor2", lightColor2); // Lumière avec couleur dynamique
 
