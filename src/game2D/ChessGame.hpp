@@ -91,4 +91,6 @@ private:
     void toggle_king_selection();
     void toggle_defender_selection(int index, const std::vector<int>& moves);
     void clear_all_legal_moves();
+    // pawn transform
+    void show_all_transform_options();
 };

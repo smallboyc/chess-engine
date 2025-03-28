@@ -1,6 +1,7 @@
 #include "Pawn.hpp"
 #include <imgui.h>
 #include <array>
+#include <iostream>
 #include <memory>
 #include <optional>
 #include "Piece.hpp"
@@ -63,7 +64,7 @@ void Pawn::move_piece(const int from, const int to, Chessboard& board, Turn& tur
 {
     if (is_at_the_board_end(to))
     {
-        enable_transformation(from, to, board, turn);
+        turn.pawn_promotion = {from, to};
     }
     else
     {
@@ -82,10 +83,10 @@ void Pawn::move_piece(const int from, const int to, Chessboard& board, Turn& tur
             }
             m_double_move = false;
         }
-        board[to] = std::move(board[from]);
+        move_processing = {from, to};
     }
     //
-    move_processing = {from, to};
+    board[to] = std::move(board[from]);
 }
 
 bool Pawn::has_target_enemy_at_same_level(int from, int to, Chessboard& board)

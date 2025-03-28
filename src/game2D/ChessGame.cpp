@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 #include <optional>
+#include <unordered_map>
 #include "Bishop.hpp"
 #include "King.hpp"
 #include "Knight.hpp"
@@ -38,7 +39,7 @@ std::optional<Texture> ChessGame::get_selected_piece_texture()
 void ChessGame::initialize_board()
 {
     std::array<PiecePositions, 6> initial_positions = {
-        PiecePositions{Type::Pawn, {8, 9, 10, 11, 12, 13, 14, 15}, {48, 49, 51, 50, 52, 53, 54, 55}},
+        PiecePositions{Type::Pawn, {8, 10, 11, 12, 13, 14, 15}, {48, 9, 50, 51, 52, 53, 54, 55}},
         PiecePositions{Type::Rook, {0, 7}, {56, 63}},
         PiecePositions{Type::Knight, {1, 6}, {57, 62}},
         PiecePositions{Type::Bishop, {2, 5}, {58, 61}},
@@ -133,7 +134,7 @@ void ChessGame::play(Settings& settings, Animation& animation)
 
         std::optional<int> clicked_cell = draw_cell(i, current_color_cell);
 
-        if (clicked_cell.has_value() && !animation.isAnimating)
+        if (clicked_cell.has_value() && !animation.isAnimating && !m_turn.pawn_promotion.has_value())
         {
             if (m_status.free_play)
             {
@@ -145,6 +146,11 @@ void ChessGame::play(Settings& settings, Animation& animation)
             }
         }
         display_scopes(i, settings);
+    }
+
+    if (m_turn.pawn_promotion.has_value())
+    {
+        show_all_transform_options();
     }
 }
 
@@ -161,8 +167,11 @@ void ChessGame::handle_free_play(int clicked_cell)
     }
     if (piece_selected() && player_move(clicked_cell))
     {
-        m_move_saves.emplace_back(clicked_cell, m_board[clicked_cell]->get_texture(m_textures), m_selected_piece->second->has_captured());
-        switch_player_turn();
+        if (!m_turn.pawn_promotion.has_value())
+        {
+            m_move_saves.emplace_back(clicked_cell, m_board[clicked_cell]->get_texture(m_textures), m_selected_piece->second->has_captured());
+            switch_player_turn();
+        }
     }
     //! current_player
     auto& [index, king] = m_current_king;
@@ -307,22 +316,24 @@ bool ChessGame::player_move(int selected_cell_index)
         piece->move_piece(p_index, selected_cell_index, m_board, m_turn, m_move_processing);
 
         // Vérifier si le roi est en échec après le mouvement que si c'est pas le roi qui bouge (car le roi a pas à se protéger lui même).
-        if (piece->get_type() != Type::King && king->is_in_check(k_index, m_turn, m_board))
+        if (piece)
         {
-            m_warnings.dangerous_move = true;
-            // Annuler le mouvement
-            cancel_player_move(selected_cell_index, p_index, std::move(deleted_enemy));
-            return false;
-        }
-        else
-        {
-            piece->set_capture(static_cast<bool>(deleted_enemy));
+            if (piece->get_type() != Type::King && king->is_in_check(k_index, m_turn, m_board))
+            {
+                m_warnings.dangerous_move = true;
+                // Annuler le mouvement
+                cancel_player_move(selected_cell_index, p_index, std::move(deleted_enemy));
+                return false;
+            }
+            else
+            {
+                piece->set_capture(static_cast<bool>(deleted_enemy));
+            }
         }
 
         // Réinitialiser tous les "buffers".
         clear_all_legal_moves();
         king->reset_buffers();
-
         return true;
     }
     return false;
@@ -397,4 +408,33 @@ void ChessGame::clear_all_legal_moves()
             m_board[i]->legal_moves().clear();
         }
     }
+}
+
+// gui for promotion
+void ChessGame::show_all_transform_options()
+{
+    ImGui::Begin("Transform option");
+
+    std::unordered_map<Type, std::string> piece_names = {
+        {Type::Bishop, "b"},
+        {Type::Knight, "n"},
+        {Type::Rook, "r"},
+        {Type::Queen, "q"}
+    };
+
+    for (auto& [type, piece_name] : piece_names)
+    {
+        auto texture_path = m_textures[(m_turn.current_player == Color::White ? "w" : "b") + piece_name + ".png"];
+        if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(texture_path), {m_size, m_size}))
+        {
+            m_board[m_turn.pawn_promotion->to] = create_piece(type, m_turn.current_player);
+            m_turn.pawn_promotion.reset();
+            m_move_processing = {m_turn.pawn_promotion->from, m_turn.pawn_promotion->to};
+            m_move_saves.emplace_back(m_turn.pawn_promotion->to, texture_path, false);
+            switch_player_turn();
+        }
+        ImGui::SameLine();
+    }
+
+    ImGui::End();
 }

@@ -50,10 +50,16 @@ struct MoveStatus {
     bool    capture;
 };
 
+struct PawnPromotion {
+    int from{};
+    int to{};
+};
+
 struct Turn {
-    int                total{0};
-    Color              current_player{Color::White};
-    std::optional<int> pawn_capture;
+    int                          total{0};
+    Color                        current_player{Color::White};
+    std::optional<int>           pawn_capture;
+    std::optional<PawnPromotion> pawn_promotion; // pawn transform
 };
 
 Position              get_position(int index);
