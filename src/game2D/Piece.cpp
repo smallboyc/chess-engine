@@ -84,8 +84,7 @@ void Piece::move_piece(const int from, const int to, Chessboard& board, Turn& tu
     turn.total++;
     board[to]   = std::move(board[from]);
     board[from] = nullptr;
-    if (!m_has_moved)
-        m_has_moved = true;
+  
     move_processing = {from, to};
 }
 

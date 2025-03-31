@@ -56,5 +56,6 @@ private:
     std::vector<int>                           m_escape_moves;
     std::unordered_map<Type, std::vector<int>> m_threats;
     std::unordered_map<int, std::vector<int>>  m_defenders;
+    bool m_has_moved{false}; // used to check if the king has moved for castling
     //
 };

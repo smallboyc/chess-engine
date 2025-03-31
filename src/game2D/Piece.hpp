@@ -38,8 +38,6 @@ public:
     int               direction() const;
     std::vector<int>& legal_moves() { return m_legal_moves; };
     bool              player_move_is_legal(int choice);
-    bool              has_moved() const { return m_has_moved; }
-    void              set_has_moved(bool has_moved) { m_has_moved = has_moved; };
     virtual void      set_legal_moves(int from, const Chessboard& board, Turn& turn) = 0;
     virtual void      move_piece(int from, int to, Chessboard& board, Turn& turn, std::optional<MoveProcessing>& move_processing);
     // capture
@@ -56,7 +54,6 @@ private:
     Color            m_color;
     std::vector<int> m_legal_moves;
     bool             m_has_captured{};
-    bool             m_has_moved{};
 };
 
 bool is_empty_cell(int index, const Chessboard& board);

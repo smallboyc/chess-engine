@@ -6,6 +6,7 @@
 #include "PieceMove.hpp"
 #include "utils.hpp"
 
+
 void King::set_legal_moves(int from, const Chessboard& board, Turn& turn)
 {
     std::vector<int> theoric_moves;
@@ -39,8 +40,8 @@ void King::move_piece(const int from, const int to, Chessboard& board, Turn& tur
         }
     }
 
-    if (!has_moved())
-        set_has_moved(true);
+    if (!m_has_moved)
+        m_has_moved = true;
     //
     move_processing = {from, to};
 }
@@ -107,6 +108,7 @@ struct TargetPieceTypeOnPath {
 
 void King::add_threatening_pieces(int start, Turn& turn, std::unordered_map<Type, std::vector<int>>& threats, const Chessboard& board)
 {
+    //list all dangerous enemy pieces moves for the king
     std::vector<TargetPieceTypeOnPath> target_path_pieces = {
         {rook_moves, {Type::Rook, Type::Queen}},
         {bishop_moves, {Type::Bishop, Type::Queen}},
@@ -268,7 +270,7 @@ void King::check_for_castling(const int index, const Chessboard& board, Turn& tu
             m_castling->queenside_rook_index = true;
     }
 
-    if (has_moved())
+    if (m_has_moved)
     {
         m_castling.reset();
         return;
