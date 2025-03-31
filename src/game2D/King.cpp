@@ -6,7 +6,6 @@
 #include "PieceMove.hpp"
 #include "utils.hpp"
 
-
 void King::set_legal_moves(int from, const Chessboard& board, Turn& turn)
 {
     std::vector<int> theoric_moves;
@@ -48,14 +47,14 @@ void King::move_piece(const int from, const int to, Chessboard& board, Turn& tur
 
 bool King::handle_castling(int king_target, Chessboard& board)
 {
-    if (king_target == m_castling->kingside_special_moves.new_king_index)
+    if (king_target == m_castling->kingside->castling_move.new_king_index)
     {
-        move_rook(m_castling->kingside_rook_index, m_castling->kingside_special_moves.new_rook_index, board);
+        move_rook(m_castling->kingside->rook_index, m_castling->kingside->castling_move.new_rook_index, board);
         return true;
     }
-    if (king_target == m_castling->queenside_special_moves.new_king_index)
+    if (king_target == m_castling->queenside->castling_move.new_king_index)
     {
-        move_rook(m_castling->queenside_rook_index, m_castling->queenside_special_moves.new_rook_index, board);
+        move_rook(m_castling->queenside->rook_index, m_castling->queenside->castling_move.new_rook_index, board);
         return true;
     }
     return false;
@@ -108,7 +107,7 @@ struct TargetPieceTypeOnPath {
 
 void King::add_threatening_pieces(int start, Turn& turn, std::unordered_map<Type, std::vector<int>>& threats, const Chessboard& board)
 {
-    //list all dangerous enemy pieces moves for the king
+    // list all dangerous enemy pieces moves for the king
     std::vector<TargetPieceTypeOnPath> target_path_pieces = {
         {rook_moves, {Type::Rook, Type::Queen}},
         {bishop_moves, {Type::Bishop, Type::Queen}},
@@ -258,16 +257,16 @@ void King::reset_buffers()
 // Castling
 void King::check_for_castling(const int index, const Chessboard& board, Turn& turn)
 {
-    if (!m_castling->kingside_canceled)
+    if (m_castling->kingside.has_value())
     {
-        if (!board[m_castling->kingside_rook_index])
-            m_castling->kingside_canceled = true;
+        if (!board[m_castling->kingside->rook_index])
+            m_castling->kingside.reset();
     }
 
-    if (!m_castling->queenside_canceled)
+    if (m_castling->queenside.has_value())
     {
-        if (!board[m_castling->queenside_rook_index])
-            m_castling->queenside_rook_index = true;
+        if (!board[m_castling->queenside->rook_index])
+            m_castling->kingside.reset();
     }
 
     if (m_has_moved)
@@ -276,7 +275,7 @@ void King::check_for_castling(const int index, const Chessboard& board, Turn& tu
         return;
     }
 
-    if (m_castling->kingside_canceled && m_castling->queenside_canceled)
+    if (!m_castling.has_value() && !m_castling.has_value())
     {
         m_castling.reset();
         return;
@@ -285,21 +284,21 @@ void King::check_for_castling(const int index, const Chessboard& board, Turn& tu
     bool kingside_free  = kingside_castling_is_free(index, board, turn);
     bool queenside_free = queenside_castling_is_free(index, board, turn);
 
-    if (kingside_free && !m_castling->kingside_canceled)
+    if (kingside_free && m_castling->kingside.has_value())
     {
-        m_castling->kingside_special_moves = {index + 2, index + 1};
+        m_castling->kingside->castling_move = {index + 2, index + 1};
         legal_moves().push_back(index + 2);
     }
-    if (queenside_free && !m_castling->queenside_canceled)
+    if (queenside_free && m_castling->queenside.has_value())
     {
-        m_castling->queenside_special_moves = {index - 2, index - 1};
+        m_castling->queenside->castling_move = {index - 2, index - 1};
         legal_moves().push_back(index - 2);
     }
 }
 
 bool King::kingside_castling_is_free(const int index, const Chessboard& board, Turn& turn)
 {
-    for (int i{index + 1}; i < m_castling->kingside_rook_index; i++)
+    for (int i{index + 1}; i < m_castling->kingside->rook_index; i++)
     {
         if (!cell_is_free(i, board, turn))
             return false;
@@ -309,7 +308,7 @@ bool King::kingside_castling_is_free(const int index, const Chessboard& board, T
 
 bool King::queenside_castling_is_free(const int index, const Chessboard& board, Turn& turn)
 {
-    for (int i{index - 1}; i > m_castling->queenside_rook_index; i--)
+    for (int i{index - 1}; i > m_castling->queenside->rook_index; i--)
     {
         if (!cell_is_free(i, board, turn))
             return false;

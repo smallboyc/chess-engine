@@ -2,20 +2,21 @@
 #include <optional>
 #include "Piece.hpp"
 
-struct SpecialMove {
+struct CastlingMove {
     int new_king_index;
     int new_rook_index;
 };
+
+struct TargetedRook {
+    int          rook_index{};
+    CastlingMove castling_move{};
+};
 struct Castling {
     explicit Castling(const std::vector<int>& rooks)
-        : queenside_rook_index(rooks[0]), kingside_rook_index(rooks[1]) {}
-    //
-    int         queenside_rook_index{};
-    bool        queenside_canceled{};
-    int         kingside_rook_index{};
-    bool        kingside_canceled{};
-    SpecialMove kingside_special_moves{};
-    SpecialMove queenside_special_moves{};
+        : queenside(TargetedRook{rooks[0]}), kingside(TargetedRook{rooks[1]}) {}
+
+    std::optional<TargetedRook> queenside;
+    std::optional<TargetedRook> kingside;
 };
 
 class King : public Piece {
@@ -56,6 +57,6 @@ private:
     std::vector<int>                           m_escape_moves;
     std::unordered_map<Type, std::vector<int>> m_threats;
     std::unordered_map<int, std::vector<int>>  m_defenders;
-    bool m_has_moved{false}; // used to check if the king has moved for castling
+    bool                                       m_has_moved{false}; // used to check if the king has moved for castling
     //
 };

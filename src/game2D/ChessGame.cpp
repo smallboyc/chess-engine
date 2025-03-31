@@ -38,11 +38,17 @@ std::optional<Texture> ChessGame::get_selected_piece_texture()
 // Create
 void ChessGame::initialize_board()
 {
+    // std::array<PiecePositions, 6> initial_positions = {
+    //     PiecePositions{Type::Pawn, {8, 9, 10, 11, 12, 13, 14, 15}, {48, 49, 50, 51, 52, 53, 54, 55}},
+    //     PiecePositions{Type::Rook, {0, 7}, {56, 63}},
+    //     PiecePositions{Type::Knight, {1, 6}, {57, 62}},
+    //     PiecePositions{Type::Bishop, {2, 5}, {58, 61}},
+    //     PiecePositions{Type::Queen, {3}, {59}},
+    //     PiecePositions{Type::King, {4}, {60}}
+    // };
     std::array<PiecePositions, 6> initial_positions = {
-        PiecePositions{Type::Pawn, {8, 9, 10, 11, 12, 13, 14, 15}, {48, 49, 50, 51, 52, 53, 54, 55}},
+
         PiecePositions{Type::Rook, {0, 7}, {56, 63}},
-        PiecePositions{Type::Knight, {1, 6}, {57, 62}},
-        PiecePositions{Type::Bishop, {2, 5}, {58, 61}},
         PiecePositions{Type::Queen, {3}, {59}},
         PiecePositions{Type::King, {4}, {60}}
     };
