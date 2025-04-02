@@ -53,9 +53,10 @@ public:
     void board_colors_listener(Settings& settings);
 
 private:
+    //* VARS
     float                                 m_size{};
     ColorCells                            m_color_cells;
-    Chessboard                            m_board; //!!
+    Chessboard                            m_board; // CHESSBOARD
     std::optional<std::pair<int, Piece*>> m_selected_piece{std::nullopt};
     std::pair<int, King*>                 m_current_king;
     Turn                                  m_turn;
@@ -64,34 +65,34 @@ private:
     Textures                              m_textures;
     std::vector<MoveStatus>               m_move_saves;                    // for the gui
     std::optional<MoveProcessing>         m_move_processing{std::nullopt}; // from & to (for 3D renderer animation)
-    //
-    //
 
+    //* METHODS
+    // init
     void                   set_piece_on_board(const Type& piece_type, const std::vector<int>& piece_positions, const Color& piece_color);
     std::unique_ptr<Piece> create_piece(const Type& piece_type, const Color& piece_color);
     std::optional<int>     draw_cell(int cell_index, const ImVec4& color);
-    //
+    // moves
     bool player_move(int selected_cell_index);
     bool is_a_dangerous_move(int selected_cell_index);
     void cancel_player_move(int from, int to, std::unique_ptr<Piece> respawn_enemy);
-    //
+    void clear_all_legal_moves();
+    // scopes
     void display_scopes(int selected_cell_index, Settings& settings);
-    //
+    // selections
     bool piece_can_be_selected(int cell_index);
     void select_piece(int selected_cell_index);
     bool piece_selected() const;
+    void toggle_king_selection();
+    void toggle_defender_selection(int index, const std::vector<int>& moves);
     void switch_player_turn();
-    // king
+    // current king
     void set_current_king();
     void bind_rooks_with_king();
-    // handlers
+    // handlers for game situations
     void handle_free_play(int clicked_cell);
     void handle_check_situation(int clicked_cell);
     void handle_double_check();
     void handle_single_check();
-    void toggle_king_selection();
-    void toggle_defender_selection(int index, const std::vector<int>& moves);
-    void clear_all_legal_moves();
     // pawn transform
     void show_all_transform_options();
 };

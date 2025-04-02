@@ -1,12 +1,13 @@
 #include "./game2D/ChessGame.hpp"
 #include "./renderer3D/Renderer3D.hpp"
 #include "Animation.hpp"
-#include "game2D/gui/GameTracker.hpp"
+#include "gui/GameTracker.hpp"
 
 int main()
 {
     // Game 2D
-    ChessGame   chess2D;
+    ChessGame chess2D;
+    // GUI
     GameTracker game_tracker;
     Settings    settings;
     // Renderer 3D

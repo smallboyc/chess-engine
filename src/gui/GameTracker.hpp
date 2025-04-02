@@ -1,5 +1,5 @@
 #pragma once
-#include "../ChessGame.hpp"
+#include "../game2D/ChessGame.hpp"
 
 class GameTracker {
 public:
@@ -9,5 +9,5 @@ public:
 private:
     void history_moves_widget(ChessGame& chess_game, std::vector<MoveStatus>& all_moves);
     void selected_piece_widget(ChessGame& chess_game);
-    void warnings_widget(ChessGame &chess_game);
+    void warnings_widget(ChessGame& chess_game);
 };
