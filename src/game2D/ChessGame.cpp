@@ -16,6 +16,7 @@
 #include "Types.hpp"
 #include "utils.hpp"
 
+// Settings
 void ChessGame::board_size_listener(Settings& settings)
 {
     m_size = settings.get_board_size();
@@ -25,6 +26,7 @@ void ChessGame::board_colors_listener(Settings& settings)
     m_color_cells = {settings.get_primary_color(), settings.get_secondary_color()};
 }
 
+// Get texture of the selected piece for the GUI
 std::optional<Texture> ChessGame::get_selected_piece_texture()
 {
     if (m_selected_piece.has_value())
@@ -35,41 +37,33 @@ std::optional<Texture> ChessGame::get_selected_piece_texture()
     return std::nullopt;
 }
 
-// Create
+// Initialize the chessboard by placing the pieces in their starting positions
 void ChessGame::initialize_board()
 {
-    // std::array<PiecePositions, 6> initial_positions = {
-    //     PiecePositions{Type::Pawn, {8, 9, 10, 11, 12, 13, 14, 15}, {48, 49, 50, 51, 52, 53, 54, 55}},
-    //     PiecePositions{Type::Rook, {0, 7}, {56, 63}},
-    //     PiecePositions{Type::Knight, {1, 6}, {57, 62}},
-    //     PiecePositions{Type::Bishop, {2, 5}, {58, 61}},
-    //     PiecePositions{Type::Queen, {3}, {59}},
-    //     PiecePositions{Type::King, {4}, {60}}
-    // };
     std::array<PiecePositions, 6> initial_positions = {
-
+        PiecePositions{Type::Pawn, {8, 9, 10, 11, 12, 13, 14, 15}, {48, 49, 50, 51, 52, 53, 54, 55}},
         PiecePositions{Type::Rook, {0, 7}, {56, 63}},
+        PiecePositions{Type::Knight, {1, 6}, {57, 62}},
+        PiecePositions{Type::Bishop, {2, 5}, {58, 61}},
         PiecePositions{Type::Queen, {3}, {59}},
         PiecePositions{Type::King, {4}, {60}}
     };
 
     for (const PiecePositions& piece_positions : initial_positions)
     {
-        set_piece_on_board(piece_positions, Color::White);
-        set_piece_on_board(piece_positions, Color::Black);
+        set_piece_on_board(piece_positions.piece_type, piece_positions.white_position, Color::White);
+        set_piece_on_board(piece_positions.piece_type, piece_positions.black_position, Color::Black);
     }
 }
 
-void ChessGame::set_piece_on_board(const PiecePositions& piece_positions, const Color& piece_color)
+// Set the pieces on the chessboard
+void ChessGame::set_piece_on_board(const Type& piece_type, const std::vector<int>& piece_positions, const Color& piece_color)
 {
-    std::vector<int> current_piece_color = piece_positions.white_position;
-    if (piece_color == Color::Black)
-        current_piece_color = piece_positions.black_position;
-
-    for (const int& piece_position : current_piece_color)
-        m_board[piece_position] = create_piece(piece_positions.piece_type, piece_color);
+    for (const int& piece_position : piece_positions)
+        m_board[piece_position] = create_piece(piece_type, piece_color);
 }
 
+// Create a piece of the specified type and color
 std::unique_ptr<Piece> ChessGame::create_piece(const Type& piece_type, const Color& piece_color)
 {
     switch (piece_type)
@@ -84,6 +78,7 @@ std::unique_ptr<Piece> ChessGame::create_piece(const Type& piece_type, const Col
     }
 }
 
+// Set the current king based on the player's turn
 void ChessGame::set_current_king()
 {
     for (int i{0}; i < m_board.size(); i++)
@@ -91,7 +86,7 @@ void ChessGame::set_current_king()
         if (m_board[i] && m_board[i]->get_type() == Type::King && m_board[i]->get_color() == m_turn.current_player)
         {
             m_current_king = {i, dynamic_cast<King*>(m_board[i].get())};
-            // on set les tours uniquement aux 2 premiers tours.
+            // bind rooks with king only at the beginning of the game (1st & 2nd turn)
             if (m_turn.total < 2)
             {
                 bind_rooks_with_king();
@@ -101,10 +96,10 @@ void ChessGame::set_current_king()
     }
 }
 
+// Bind the rooks with the king for castling
 void ChessGame::bind_rooks_with_king()
 {
     std::vector<int> rooks;
-    // on lui associe les ses tours
     for (int j{0}; j < m_board.size(); j++)
     {
         if (m_board[j] && m_board[j]->get_type() == Type::Rook && m_board[j]->get_color() == m_turn.current_player)
@@ -112,9 +107,11 @@ void ChessGame::bind_rooks_with_king()
             rooks.push_back(j);
         }
     }
-    m_current_king.second->set_castling(rooks);
+    if (!rooks.empty())
+        m_current_king.second->set_castling(rooks);
 }
 
+// Draw a cell on the chessboard
 std::optional<int> ChessGame::draw_cell(int cell_index, const ImVec4& color)
 {
     ImGui::PushID(cell_index);
@@ -130,6 +127,7 @@ std::optional<int> ChessGame::draw_cell(int cell_index, const ImVec4& color)
     return clicked ? std::optional<int>{cell_index} : std::nullopt;
 }
 
+// Play the game (main loop for the 2D chess game)
 void ChessGame::play(Settings& settings, Animation& animation)
 {
     ImVec4 current_color_cell = m_color_cells.first;
@@ -160,9 +158,9 @@ void ChessGame::play(Settings& settings, Animation& animation)
     }
 }
 
+// Free play is the classic chess game function without any special rules (check, checkmate)
 void ChessGame::handle_free_play(int clicked_cell)
 {
-    // current_player
     if (piece_can_be_selected(clicked_cell))
     {
         if (piece_selected())
@@ -201,6 +199,7 @@ void ChessGame::handle_free_play(int clicked_cell)
     }
 }
 
+// Check situation is a part of the chess game where the king is in check or checkmate
 void ChessGame::handle_check_situation(int clicked_cell)
 {
     auto& [index, king] = m_current_king;
@@ -237,6 +236,7 @@ void ChessGame::handle_check_situation(int clicked_cell)
     }
 }
 
+// Active the check situation when only the king must move to survive.
 void ChessGame::handle_double_check()
 {
     auto& [index, king] = m_current_king;
@@ -246,6 +246,7 @@ void ChessGame::handle_double_check()
         m_warnings.checkmate = true;
 }
 
+// Active the check situation when the king can move or a defender can move to protect the king.
 void ChessGame::handle_single_check()
 {
     auto& [index, king] = m_current_king;
@@ -257,17 +258,15 @@ void ChessGame::handle_single_check()
         m_warnings.checkmate = true;
 }
 
+// Toggle the selection of the king (first click = selected, second click = deselected)
 void ChessGame::toggle_king_selection()
 {
-    //
-    if (m_status.king_is_selected)
+    if (m_status.king_is_selected) // cancel selection
     {
         m_status.king_is_selected = false;
         m_selected_piece.reset();
-        std::cout << "Roi déselectionné"
-                  << "\n";
     }
-    else
+    else // active selection
     {
         auto& [index, king]           = m_current_king;
         m_selected_piece              = {index, king};
@@ -275,29 +274,24 @@ void ChessGame::toggle_king_selection()
         piece->legal_moves()          = king->get_escape_moves();
         m_status.king_is_selected     = true;
         m_status.defender_is_selected = false;
-        std::cout << "Roi sélectionné"
-                  << "\n";
     }
 }
 
+// Toggle the selection of a defender (first click = selected, second click = deselected)
 void ChessGame::toggle_defender_selection(const int index, const std::vector<int>& moves)
 {
-    if (m_status.defender_is_selected)
+    if (m_status.defender_is_selected) // cancel selection
     {
         m_status.defender_is_selected = false;
         m_selected_piece.reset();
-        std::cout << "Allié déselectionné"
-                  << "\n";
     }
-    else
+    else // active selection
     {
         m_selected_piece              = {index, m_board[index].get()};
         auto& [index, piece]          = m_selected_piece.value();
         piece->legal_moves()          = moves;
         m_status.defender_is_selected = true;
         m_status.king_is_selected     = false;
-        std::cout << "Allié sélectionné"
-                  << "\n";
     }
 }
 
@@ -308,6 +302,7 @@ void ChessGame::select_piece(int selected_cell_index)
     piece->set_legal_moves(index, m_board, m_turn);
 }
 
+// Move the piece to the selected cell if the move is legal + check if the king is in check after the move
 bool ChessGame::player_move(int selected_cell_index)
 {
     auto& [p_index, piece] = m_selected_piece.value();
@@ -315,19 +310,17 @@ bool ChessGame::player_move(int selected_cell_index)
 
     if (piece->player_move_is_legal(selected_cell_index))
     {
-        // Sauvegarder l'état actuel pour annuler le mouvement si nécessaire
+        // We have to keep information about the enemy piece that will be deleted (if the move is canceled).
         auto deleted_enemy = std::move(m_board[selected_cell_index]);
 
-        // Effectuer le mouvement
         piece->move_piece(p_index, selected_cell_index, m_board, m_turn, m_move_processing);
 
-        // Vérifier si le roi est en échec après le mouvement que si c'est pas le roi qui bouge (car le roi a pas à se protéger lui même).
+        // Check if the move is legal (the king is not in check after the move) else cancel the move.
         if (piece)
         {
             if (piece->get_type() != Type::King && king->is_in_check(k_index, m_turn, m_board))
             {
                 m_warnings.dangerous_move = true;
-                // Annuler le mouvement
                 cancel_player_move(selected_cell_index, p_index, std::move(deleted_enemy));
                 return false;
             }
@@ -337,7 +330,6 @@ bool ChessGame::player_move(int selected_cell_index)
             }
         }
 
-        // Réinitialiser tous les "buffers".
         clear_all_legal_moves();
         king->reset_buffers();
         return true;
@@ -345,15 +337,16 @@ bool ChessGame::player_move(int selected_cell_index)
     return false;
 }
 
+// Cancel the player move if the move is illegal (the king is in check after the move)
 void ChessGame::cancel_player_move(int from, int to, std::unique_ptr<Piece> respawn_enemy)
 {
     m_board[to]   = std::move(m_board[from]);
     m_board[from] = std::move(respawn_enemy);
     m_turn.total--;
-    //
     m_move_processing.reset();
 }
 
+// Display the scopes of the selected piece and the king (scopes are colored cells that show the possible moves of a piece)
 void ChessGame::display_scopes(int cell_index, Settings& settings)
 {
     auto& [index, king] = m_current_king;
@@ -368,16 +361,20 @@ void ChessGame::display_scopes(int cell_index, Settings& settings)
         king->draw_defenders_scopes(m_selected_piece, cell_index);
     }
 }
+
+// Check if a piece can be selected (meaning it's not empty an empty cell and belongs to the current player)
 bool ChessGame::piece_can_be_selected(int cell_index)
 {
     return !is_empty_cell(cell_index, m_board) && m_board[cell_index]->get_color() == m_turn.current_player;
 }
 
+// Check if a piece is selected
 bool ChessGame::piece_selected() const
 {
     return m_selected_piece.has_value();
 }
 
+// Switch the player's turn, reset the selected piece and warnings & set the new current king
 void ChessGame::switch_player_turn()
 {
     m_selected_piece.reset();
@@ -386,7 +383,7 @@ void ChessGame::switch_player_turn()
     set_current_king();
 }
 
-// textures
+// Load all 2D textures of the pieces.
 void ChessGame::load_all_textures(const std::string& folder_path)
 {
     for (const auto& entry : std::filesystem::directory_iterator(folder_path))
@@ -404,7 +401,7 @@ void ChessGame::load_all_textures(const std::string& folder_path)
     }
 }
 
-// utils
+// Clear all legal moves for all pieces on the board after a move
 void ChessGame::clear_all_legal_moves()
 {
     for (int i{0}; i < m_board.size(); i++)
@@ -416,7 +413,7 @@ void ChessGame::clear_all_legal_moves()
     }
 }
 
-// gui for promotion
+// Show all transformation options for the pawn promotion in the GUI
 void ChessGame::show_all_transform_options()
 {
     ImGui::Begin("Transform option");

@@ -45,11 +45,12 @@ public:
     Turn                           get_turn() const { return m_turn; };
     Textures                       get_textures() const { return m_textures; };
     std::optional<Texture>         get_selected_piece_texture();
-    std::vector<MoveStatus>        get_moves_saved() const { return m_move_saves; };
-    std::optional<MoveProcessing>& get_move_processing() { return m_move_processing; };
+    std::vector<MoveStatus>        get_moves_saved() const { return m_move_saves; };    // used for the history in the GUI
+    std::optional<MoveProcessing>& get_move_processing() { return m_move_processing; }; // used for smooth 3D animation
     Warnings                       get_warnings() { return m_warnings; };
-    void                           board_size_listener(Settings& settings);
-    void                           board_colors_listener(Settings& settings);
+    // listeners : used to update board size & colors in the GUI
+    void board_size_listener(Settings& settings);
+    void board_colors_listener(Settings& settings);
 
 private:
     float                                 m_size{};
@@ -66,7 +67,7 @@ private:
     //
     //
 
-    void                   set_piece_on_board(const PiecePositions& piece_positions, const Color& piece_color);
+    void                   set_piece_on_board(const Type& piece_type, const std::vector<int>& piece_positions, const Color& piece_color);
     std::unique_ptr<Piece> create_piece(const Type& piece_type, const Color& piece_color);
     std::optional<int>     draw_cell(int cell_index, const ImVec4& color);
     //

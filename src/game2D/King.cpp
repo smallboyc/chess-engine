@@ -176,14 +176,14 @@ bool King::has_allies_to_defend(Turn& turn, const Chessboard& board)
 
 bool King::can_escape(const int index, Turn& turn, const Chessboard& board)
 {
-    // Récupérer les mouvements théoriques du roi.
+    // Récupérer les mouvements légaux du roi.
     set_legal_moves(index, board, turn);
-    if (legal_moves().empty()) // Aucune case accessible à côté du roi
+    if (legal_moves().empty()) // Aucune case accessible à côté du roi => Checkmate
     {
         return false;
     }
-    // debug
-    //  Récupérer les mouvements possibles de base du roi (vérifier si cases voisines ne sont pas attaquées)
+
+    //  Filtrer les mouvements légaux en ne gardant que les mouvements qui ne sont pas menacés.
     for (const int& move : legal_moves())
     {
         std::unordered_map<Type, std::vector<int>> escape_move_threatened;
