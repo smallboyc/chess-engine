@@ -1,0 +1,62 @@
+# Blender 4.2.0 MTL File: 'minecraft_block.blend'
+# www.blender.org
+
+newmtl Coral
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/smallboyc/Documents/IMAC/imac2/S4/OpenGL/OpenGL-S4/assets/images/Coral.jpg
+
+newmtl Emerald
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/smallboyc/Documents/IMAC/imac2/S4/OpenGL/OpenGL-S4/assets/images/Emerald.jpg
+
+newmtl Gold
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/smallboyc/Documents/IMAC/imac2/S4/OpenGL/OpenGL-S4/assets/images/Gold.jpg
+
+newmtl Ice
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/smallboyc/Documents/IMAC/imac2/S4/OpenGL/OpenGL-S4/assets/images/Ice.jpg
+
+newmtl Nylium
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/smallboyc/Documents/IMAC/imac2/S4/OpenGL/OpenGL-S4/assets/images/Nylium.jpg
+
+newmtl Obsidian
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd /Users/smallboyc/Documents/IMAC/imac2/S4/OpenGL/OpenGL-S4/assets/images/Obsidian.jpg
