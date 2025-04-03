@@ -26,4 +26,3 @@ private:
 
 // pawn utils
 bool is_at_the_board_end(int to);
-void enable_transformation(int from, int to, Chessboard& board, Turn& turn);

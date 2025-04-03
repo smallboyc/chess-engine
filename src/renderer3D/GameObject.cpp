@@ -37,7 +37,7 @@ void GameObject::render(glmax::Shader& shader, Settings& settings) const
         // Ici, on utilise glDrawElementsInstanced pour dessiner toutes les instances
         if (m_model_matrices.size() > 1)
             glDrawElementsInstanced(GL_TRIANGLES, submesh.m_index_count, GL_UNSIGNED_INT, (const GLvoid*)(submesh.m_index_offset * sizeof(uint32_t)), m_model_matrices.size());
-        else
+        else if (m_model_matrices.size() != 0)
             glDrawElements(GL_TRIANGLES, submesh.m_index_count, GL_UNSIGNED_INT, (const GLvoid*)(submesh.m_index_offset * sizeof(uint32_t)));
         //
         if (material.m_hasMapKd)

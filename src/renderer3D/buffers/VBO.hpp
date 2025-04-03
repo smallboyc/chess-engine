@@ -3,7 +3,7 @@
 
 class VBO {
 public:
-    VBO() : m_id(0) {}
+    VBO();
     ~VBO();
     void init();
     void bind() const;

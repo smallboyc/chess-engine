@@ -80,7 +80,7 @@ void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::op
     float radius     = 5.0f;
     // Animation de la lumière mobile (position)
     glm::vec3 lightPos2   = glm::vec3(radius * sin(elapsed_time * lightSpeed), 5.0f, radius * cos(elapsed_time * lightSpeed));
-    glm::vec3 lightColor2 = glm::vec3(1.0f, 1.0f, 1.0f);     // Couleur oscillant entre rouge et vert
+    glm::vec3 lightColor2 = glm::vec3(1.0f, 1.0f, 1.0f);        // Couleur oscillant entre rouge et vert
     m_basic_shader.set_uniform_3fv("lightPos2", lightPos2);     // Lumière mobile
     m_basic_shader.set_uniform_3fv("lightColor2", lightColor2); // Lumière avec couleur dynamique
 
@@ -89,17 +89,17 @@ void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::op
     // UPDATE
     if (move_processing.has_value())
     {
-        if (!animation.isAnimating)
+        if (!animation.is_animating)
         {
-            animation.isAnimating        = true;
-            animation.animationStartTime = elapsed_time;
+            animation.is_animating        = true;
+            animation.animation_start_time = elapsed_time;
         }
 
         // -> ANIMATION
         m_game_object_manager.move_piece(chessboard, move_processing.value(), elapsed_time, animation);
 
         // -> Update data after the animation's end
-        if (!animation.isAnimating)
+        if (!animation.is_animating)
         {
             std::cout << "Update data after the end of animation!"
                       << "\n";
@@ -109,5 +109,5 @@ void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::op
         }
     }
     // RENDER OBJECTS (PIECE, CHESSBOARD)
-    m_game_object_manager.render_game_objects(m_basic_shader,settings);
+    m_game_object_manager.render_game_objects(m_basic_shader, settings);
 }

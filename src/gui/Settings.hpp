@@ -1,10 +1,11 @@
 #pragma once
 #include <imgui.h>
+#include "Animation.hpp"
 
 class Settings {
 public:
     Settings() = default;
-    void show();
+    void show(Animation& animation);
     //
     bool is_legal_moves_scope_active() const { return m_show_legal_moves_scope; };
     bool is_highlight_threats_scope_active() const { return m_highlight_threats_scope; };
@@ -16,10 +17,12 @@ public:
 private:
     void color_picker_widget();
     void board_size_slider_widget();
+    void animation_duration_widget(Animation& animation);
     //
     bool   m_show_legal_moves_scope{true};
     bool   m_highlight_threats_scope{true};
     ImVec4 m_primary_color{0.18f, 0.322f, 0.263f, 1.0f};
     ImVec4 m_secondary_color{0.518f, 0.741f, 0.647f, 1.0f};
     float  m_board_size{50.f};
+    // animation
 };

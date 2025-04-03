@@ -1,6 +1,8 @@
 #pragma once
 #include <imgui.h>
 #include <glm/glm.hpp>
+#include <string>
+#include "game2D/utils.hpp"
 
 namespace Renderer3D {
 inline glm::vec2 get_position(const unsigned int index)
@@ -18,3 +20,4 @@ inline glm::vec3 imgui_vec4_to_glm_vec3(ImVec4 imgui_vec)
     return {imgui_vec.x, imgui_vec.y, imgui_vec.z};
 }
 } // namespace Renderer3D
+

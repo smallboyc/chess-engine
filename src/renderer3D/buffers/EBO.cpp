@@ -1,7 +1,7 @@
 #include "EBO.hpp"
 
 EBO::EBO()
-    : m_id(0) {}
+    : m_id(0){};
 
 EBO::~EBO()
 {

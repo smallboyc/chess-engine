@@ -20,6 +20,4 @@ public:
 private:
     std::unordered_map<Type, GameObject> m_pieces;
     GameObject                           m_chessboard;
-    float                                animation_duration{2.0f};
-    float                                elevation{0.0f};
 };

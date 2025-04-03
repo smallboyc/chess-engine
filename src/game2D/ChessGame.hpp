@@ -1,7 +1,6 @@
 #pragma once
 #include <glfw/src/internal.h>
 #include <imgui.h>
-#include <array>
 #include <memory>
 #include <optional>
 #include "./gui/Settings.hpp"

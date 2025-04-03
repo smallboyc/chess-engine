@@ -18,13 +18,13 @@ int main()
     quick_imgui::loop(
         "Chess App",
         {
-            .init = [&]() { 
-            ImGui::GetStyle().ItemSpacing = ImVec2(0.0f, 0.0f); 
-            // load_font("../../assets/fonts/PoetsenOne-Regular.ttf", 20.0f);
-             //GAME 2D
-            chess2D.load_all_textures("../../assets/images/game2D/");
-            //RENDER 3D
-            renderer3D.init(chess2D.get_chessboard()); },
+            .init = [&]() {
+                ImGui::GetStyle().ItemSpacing = ImVec2(0.0f, 0.0f);
+                // load_font("../../assets/fonts/PoetsenOne-Regular.ttf", 20.0f);
+                // GAME 2D
+                chess2D.load_all_textures("../../assets/images/game2D/");
+                // RENDER 3D
+                 renderer3D.init(chess2D.get_chessboard()); },
             .loop = [&]() { 
                 //GAME 2D
                 ImGui::SetNextWindowSizeConstraints(ImVec2(0, 0), ImVec2(FLT_MAX, FLT_MAX));
@@ -36,16 +36,17 @@ int main()
                 //RENDER 3D
                 renderer3D.run(chess2D.get_chessboard(), chess2D.get_move_processing(), animation, settings);
             // user windows
-            settings.show();
+            settings.show(animation);
             game_tracker.show(chess2D); },
             // CALLBACKS
-            .key_callback             = [&](int key, int /*scancode*/, int action, int mods) { 
-            renderer3D.use_camera().free_move_callback(key, action);
-            renderer3D.toggle_active_camera_callback(key, action); },
-            .mouse_button_callback    = [&](int button, int action, int mods) {},
-            .cursor_position_callback = [&](double xpos, double ypos) { renderer3D.use_camera().track_ball_move_callback(xpos, ypos); },
-            .scroll_callback          = [&](double /*xoffset*/, double yoffset) { renderer3D.use_camera().zoom_callback(yoffset); },
-            .window_size_callback     = [&](int width, int height) { renderer3D.window_size_callback(width, height); },
+            .key_callback = [&](int key, int /*scancode*/, int action, int mods) {
+                // renderer3D.use_camera().free_move_callback(key, action);
+                // renderer3D.toggle_active_camera_callback(key, action);
+            },
+            // .mouse_button_callback    = [&](int button, int action, int mods) {},
+            // .cursor_position_callback = [&](double xpos, double ypos) { renderer3D.use_camera().track_ball_move_callback(xpos, ypos); },
+            // .scroll_callback          = [&](double /*xoffset*/, double yoffset) { renderer3D.use_camera().zoom_callback(yoffset); },
+            // .window_size_callback     = [&](int width, int height) { renderer3D.window_size_callback(width, height); },
         }
     );
     return 0;

@@ -1,7 +1,7 @@
 #include "VAO.hpp"
 
 VAO::VAO()
-    : m_id(0) {}
+    : m_id(0){};
 
 VAO::~VAO()
 {

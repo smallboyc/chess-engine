@@ -138,7 +138,7 @@ void ChessGame::play(Settings& settings, Animation& animation)
 
         std::optional<int> clicked_cell = draw_cell(i, current_color_cell);
 
-        if (clicked_cell.has_value() && !animation.isAnimating && !m_turn.pawn_promotion.has_value())
+        if (clicked_cell.has_value() && !animation.is_animating && !m_turn.pawn_promotion.has_value())
         {
             if (m_status.free_play)
             {

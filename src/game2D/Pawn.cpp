@@ -1,11 +1,9 @@
 #include "Pawn.hpp"
 #include <imgui.h>
 #include <array>
-#include <iostream>
 #include <memory>
 #include <optional>
 #include "Piece.hpp"
-#include "Queen.hpp"
 #include "utils.hpp"
 
 void Pawn::set_legal_moves(int from, const Chessboard& board, Turn& turn)
@@ -92,14 +90,6 @@ void Pawn::move_piece(const int from, const int to, Chessboard& board, Turn& tur
 bool Pawn::has_target_enemy_at_same_level(int from, int to, Chessboard& board)
 {
     return board[to - 1] != nullptr && board[to - 1]->get_color() != board[from]->get_color() || board[to + 1] != nullptr && board[to + 1]->get_color() != board[from]->get_color();
-}
-
-// utils
-void enable_transformation(const int from, const int to, Chessboard& board, Turn& turn)
-{
-    board[from].reset();
-    // TODO(smallboyc): Donner la possibilité au joueur de chosir par la suite sa pièce.
-    board[to] = std::make_unique<Queen>(turn.current_player);
 }
 
 bool is_at_the_board_end(int to)

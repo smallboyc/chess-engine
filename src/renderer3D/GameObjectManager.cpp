@@ -1,4 +1,5 @@
 #include "GameObjectManager.hpp"
+#include <iostream>
 #include "game2D/Piece.hpp"
 #include "glm/fwd.hpp"
 #include "utils.hpp"
@@ -63,8 +64,8 @@ void GameObjectManager::load_all_pieces()
 
 void GameObjectManager::load_chessboard()
 {
-    glm::vec3 centerPos{glm::vec3(0.0f, 0.0f, 0.0f)};
-    m_chessboard.push_matrix(centerPos);
+    glm::vec3 center_position{glm::vec3(0.0f, 0.0f, 0.0f)};
+    m_chessboard.push_matrix(center_position);
     m_chessboard.load_mesh("chessboard/chessboard.obj", "chessboard");
     m_chessboard.setup_buffers();
 }
@@ -72,29 +73,29 @@ void GameObjectManager::load_chessboard()
 void GameObjectManager::move_piece(std::array<std::unique_ptr<Piece>, 64>& chessboard, MoveProcessing& moveProcessing, float& elapsedTime, Animation& animation)
 {
     auto [from, to] = moveProcessing;
-    float t         = (elapsedTime - animation.animationStartTime) / animation_duration;
+    float t         = (elapsedTime - animation.animation_start_time) / animation.animation_duration;
     // std::cout << animationStartTime << "\n";
     if (t >= 1.0f)
     {
         t = 1.0f;
         // end of animation
-        animation.isAnimating = false;
+        animation.is_animating = false;
     }
     // update the piece position
     // if the piece is a knight, we need to elevate it
-    if (animation.isAnimating)
+    if (animation.is_animating)
     {
         if (chessboard[to] && chessboard[to]->get_type() == Type::Knight)
         {
             if (t < 0.5f)
-                elevation = t;
+                animation.elevation = t;
             else
-                elevation = 1.0f - t;
+                animation.elevation = 1.0f - t;
         }
 
-        glm::vec3 startPos   = Renderer3D::world_position(Renderer3D::get_position(from), elevation);
-        glm::vec3 endPos     = Renderer3D::world_position(Renderer3D::get_position(to), elevation);
-        glm::vec3 currentPos = glm::mix(startPos, endPos, t);
+        glm::vec3 start_position   = Renderer3D::world_position(Renderer3D::get_position(from), animation.elevation);
+        glm::vec3 end_position     = Renderer3D::world_position(Renderer3D::get_position(to), animation.elevation);
+        glm::vec3 current_position = glm::mix(start_position, end_position, t);
 
         for (auto& [type, piece] : m_pieces)
         {
@@ -102,7 +103,7 @@ void GameObjectManager::move_piece(std::array<std::unique_ptr<Piece>, 64>& chess
             {
                 if (index == from)
                 {
-                    piece.set_transform(instance_index, currentPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+                    piece.set_transform(instance_index, current_position, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
                 }
             }
         }
@@ -111,10 +112,10 @@ void GameObjectManager::move_piece(std::array<std::unique_ptr<Piece>, 64>& chess
 
 void GameObjectManager::render_game_objects(glmax::Shader& shader, Settings& settings)
 {
-    m_chessboard.render(shader,settings);
+    m_chessboard.render(shader, settings);
 
     for (auto& [type, piece] : m_pieces)
     {
-        piece.render(shader,settings);
+        piece.render(shader, settings);
     }
 }
