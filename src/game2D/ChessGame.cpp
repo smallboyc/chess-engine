@@ -134,7 +134,7 @@ void ChessGame::play(Settings& settings, Animation& animation)
     for (int i{0}; i < m_board.size(); i++)
     {
         if (i % 8 != 0)
-            current_color_cell = are_equal(current_color_cell, m_color_cells.first) ? m_color_cells.second : m_color_cells.first;
+            current_color_cell = equal_cells(current_color_cell, m_color_cells.first) ? m_color_cells.second : m_color_cells.first;
 
         std::optional<int> clicked_cell = draw_cell(i, current_color_cell);
 

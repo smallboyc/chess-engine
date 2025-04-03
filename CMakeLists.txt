@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(ImGuiTemplate)
+project(ChessGame)
 
 # Crée l'exécutable principal
 add_executable(${PROJECT_NAME})

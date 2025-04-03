@@ -16,6 +16,9 @@ void Settings::show(Animation& animation)
     board_size_slider_widget();
     ImGui::Dummy(ImVec2(0.0f, 20.0f));
     animation_duration_widget(animation);
+    //
+    ImGui::Dummy(ImVec2(0.0f, 20.0f));
+    ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.4f, 1.0f), "Toggle Camera : Press L in the 3D view");
 
     ImGui::End();
 }

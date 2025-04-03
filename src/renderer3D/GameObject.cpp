@@ -1,5 +1,4 @@
 #include "GameObject.hpp"
-#include <iostream>
 #include "Texture.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/fwd.hpp"
@@ -8,15 +7,17 @@
 void GameObject::render(glmax::Shader& shader, Settings& settings) const
 {
     m_vao.bind();
-    // On boucle sur chaque sous-maille (submesh) pour dessiner ses instances
+    // We loop over each submesh to draw its instances
     for (const glmax::Submesh& submesh : m_mesh.get_submeshes())
     {
+        // Get the material for the current submesh
         const glmax::Material& material = m_mesh.get_materials().at(submesh.m_material_id);
 
         shader.set_uniform_3fv("Ka", material.m_Ka);
         shader.set_uniform_3fv("Ks", material.m_Ks);
         shader.set_uniform_1f("Ns", material.m_Ns);
 
+        // Check if the material has a texture
         if (material.m_hasMapKd)
         {
             glm::vec3 custom_cell_color = Renderer3D::imgui_vec4_to_glm_vec3(settings.get_secondary_color());
@@ -34,12 +35,12 @@ void GameObject::render(glmax::Shader& shader, Settings& settings) const
             shader.set_uniform_3fv("colorFactor", glm::vec3(1.0f, 1.0f, 1.0f));
             shader.set_uniform_1i("useTexture", false);
         }
-        // Ici, on utilise glDrawElementsInstanced pour dessiner toutes les instances
+
+        // Draw with instancing if we have more than one model matrix in the vector
         if (m_model_matrices.size() > 1)
             glDrawElementsInstanced(GL_TRIANGLES, submesh.m_index_count, GL_UNSIGNED_INT, (const GLvoid*)(submesh.m_index_offset * sizeof(uint32_t)), m_model_matrices.size());
-        else if (m_model_matrices.size() != 0)
+        else if (m_model_matrices.size() != 0) // Single instance = chessboard
             glDrawElements(GL_TRIANGLES, submesh.m_index_count, GL_UNSIGNED_INT, (const GLvoid*)(submesh.m_index_offset * sizeof(uint32_t)));
-        //
         if (material.m_hasMapKd)
             material.m_mapKd.unbind();
     }
@@ -47,6 +48,7 @@ void GameObject::render(glmax::Shader& shader, Settings& settings) const
     m_vao.unbind();
 }
 
+// Apply all transformations to the model matrix
 void GameObject::set_transform(const unsigned int index, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale)
 {
     glm::mat4 translation   = glm::translate(glm::mat4(1.0f), position);
@@ -59,26 +61,28 @@ void GameObject::set_transform(const unsigned int index, const glm::vec3& positi
     update_mat_instancing_buffer();
 }
 
+// Fill all buffers thanks to the mesh loaded
 void GameObject::setup_buffers()
 {
-    // Lier et configurer les buffers pour les pions (VBO, EBO)
+    // VBO
     m_vbo.init();
     m_vbo.bind();
     m_vbo.set_data(m_mesh.get_vertices().data(), m_mesh.get_vertices().size() * sizeof(glmax::Vertex));
     m_vbo.unbind();
 
+    // EBO
     m_ebo.init();
     m_ebo.bind();
     m_ebo.set_data(m_mesh.get_indices().data(), m_mesh.get_indices().size() * sizeof(uint32_t));
     m_ebo.unbind();
 
-    // Lier les matrices d'instance aux attributs de vertex
+    // VAO
     m_vao.init();
     m_vao.bind();
     m_vbo.bind();
     m_ebo.bind();
 
-    // Attributs de position, normal et texture pour chaque pion
+    // Data from CPU to GPU (shaders)
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glmax::Vertex), (const GLvoid*)offsetof(glmax::Vertex, m_position));
 
@@ -88,7 +92,7 @@ void GameObject::setup_buffers()
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(glmax::Vertex), (const GLvoid*)offsetof(glmax::Vertex, m_tex_coord));
 
-    // Lier et configurer le buffer pour les matrices d'instance
+    // Instancing
     if (!m_model_matrices.empty())
     {
         m_instanceVBO.init();
@@ -112,7 +116,6 @@ void GameObject::setup_buffers()
         glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4), (const GLvoid*)(3 * sizeof(glm::vec4)));
         glVertexAttribDivisor(6, 1);
 
-        // Nettoyage
         m_instanceVBO.unbind();
     }
     if (!m_piece_colors.empty())
@@ -125,6 +128,8 @@ void GameObject::setup_buffers()
         glVertexAttribDivisor(7, 1);
         m_colorVBO.unbind();
     }
+    // End of Instancing
+    
     m_vao.unbind();
 }
 

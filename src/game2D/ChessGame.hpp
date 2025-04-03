@@ -21,13 +21,6 @@
 56 57 58 59 60 61 62 63
 */
 
-struct ColorCells {
-    ImVec4 first{};
-    ImVec4 second{};
-};
-
-class Settings;
-
 class ChessGame {
 public:
     ChessGame()

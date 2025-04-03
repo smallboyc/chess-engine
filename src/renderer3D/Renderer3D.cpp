@@ -47,11 +47,11 @@ void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::op
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(window_width) / static_cast<float>(window_height), 0.1f, 100.0f);
 
     // RENDER SKYBOX (start)
-    glDepthFunc(GL_LEQUAL); // Pour éviter les problèmes de profondeur
+    glDepthFunc(GL_LEQUAL); 
     glDepthMask(GL_FALSE);
 
     m_skybox_shader.use();
-    glm::mat4 view = glm::mat4(glm::mat3(m_camera.get_view_matrix())); // Supprimer la translation
+    glm::mat4 view = glm::mat4(glm::mat3(m_camera.get_view_matrix())); 
 
     m_skybox_shader.set_uniform_1i("skybox", 0);
     m_skybox_shader.set_uniform_matrix_4fv("view", view);
@@ -75,14 +75,14 @@ void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::op
     m_basic_shader.set_uniform_3fv("lightPos1", glm::vec3(5.0f, 5.0f, 5.0f));
     m_basic_shader.set_uniform_3fv("lightColor1", glm::vec3(1.0f, 1.0f, 1.0f));
 
-    // Mise à jour de la lumière mobile (position et couleur)
+    // Update mobile light
     float lightSpeed = 0.5f;
     float radius     = 5.0f;
-    // Animation de la lumière mobile (position)
+    // Mobile light animation
     glm::vec3 lightPos2   = glm::vec3(radius * sin(elapsed_time * lightSpeed), 5.0f, radius * cos(elapsed_time * lightSpeed));
-    glm::vec3 lightColor2 = glm::vec3(1.0f, 1.0f, 1.0f);        // Couleur oscillant entre rouge et vert
-    m_basic_shader.set_uniform_3fv("lightPos2", lightPos2);     // Lumière mobile
-    m_basic_shader.set_uniform_3fv("lightColor2", lightColor2); // Lumière avec couleur dynamique
+    glm::vec3 lightColor2 = glm::vec3(1.0f, 1.0f, 1.0f);
+    m_basic_shader.set_uniform_3fv("lightPos2", lightPos2);
+    m_basic_shader.set_uniform_3fv("lightColor2", lightColor2);
 
     m_basic_shader.set_uniform_3fv("viewPos", m_camera.get_position());
 
@@ -91,7 +91,7 @@ void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::op
     {
         if (!animation.is_animating)
         {
-            animation.is_animating        = true;
+            animation.is_animating         = true;
             animation.animation_start_time = elapsed_time;
         }
 

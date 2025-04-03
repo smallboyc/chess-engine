@@ -92,7 +92,7 @@ GLuint load_texture_from_file(const std::string& path)
     return texture;
 }
 
-bool are_equal(const ImVec4& a, const ImVec4& b)
+bool equal_cells(const ImVec4& a, const ImVec4& b)
 {
     return a.x == b.x && a.y == b.y && a.z == b.z && a.w == b.w;
 }

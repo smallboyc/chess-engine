@@ -39,14 +39,13 @@ int main()
             settings.show(animation);
             game_tracker.show(chess2D); },
             // CALLBACKS
-            .key_callback = [&](int key, int /*scancode*/, int action, int mods) {
-                // renderer3D.use_camera().free_move_callback(key, action);
-                // renderer3D.toggle_active_camera_callback(key, action);
-            },
-            // .mouse_button_callback    = [&](int button, int action, int mods) {},
-            // .cursor_position_callback = [&](double xpos, double ypos) { renderer3D.use_camera().track_ball_move_callback(xpos, ypos); },
-            // .scroll_callback          = [&](double /*xoffset*/, double yoffset) { renderer3D.use_camera().zoom_callback(yoffset); },
-            // .window_size_callback     = [&](int width, int height) { renderer3D.window_size_callback(width, height); },
+            .key_callback             = [&](int key, int /*scancode*/, int action, int mods) {
+                renderer3D.use_camera().free_move_callback(key, action);
+                renderer3D.toggle_active_camera_callback(key, action); },
+            .mouse_button_callback    = [&](int button, int action, int mods) {},
+            .cursor_position_callback = [&](double xpos, double ypos) { renderer3D.use_camera().track_ball_move_callback(xpos, ypos); },
+            .scroll_callback          = [&](double /*xoffset*/, double yoffset) { renderer3D.use_camera().zoom_callback(yoffset); },
+            .window_size_callback     = [&](int width, int height) { renderer3D.window_size_callback(width, height); },
         }
     );
     return 0;
