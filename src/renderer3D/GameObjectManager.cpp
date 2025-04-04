@@ -31,7 +31,7 @@ void GameObjectManager::update_pieces_positions(std::array<std::unique_ptr<Piece
         if (chessboard[i])
         {
             Type      pieceType = chessboard[i]->get_type();
-            glm::vec3 position  = Renderer3D::world_position(Renderer3D::get_position(i));
+            glm::vec3 position  = Renderer3DUtils::world_position(Renderer3DUtils::get_position(i));
             glm::vec3 color     = chessboard[i]->get_vec_color();
             //
             m_pieces[pieceType].push_matrix(position);
@@ -93,8 +93,8 @@ void GameObjectManager::move_piece(std::array<std::unique_ptr<Piece>, 64>& chess
                 animation.elevation = 1.0f - t;
         }
 
-        glm::vec3 start_position   = Renderer3D::world_position(Renderer3D::get_position(from), animation.elevation);
-        glm::vec3 end_position     = Renderer3D::world_position(Renderer3D::get_position(to), animation.elevation);
+        glm::vec3 start_position   = Renderer3DUtils::world_position(Renderer3DUtils::get_position(from), animation.elevation);
+        glm::vec3 end_position     = Renderer3DUtils::world_position(Renderer3DUtils::get_position(to), animation.elevation);
         glm::vec3 current_position = glm::mix(start_position, end_position, t);
 
         for (auto& [type, piece] : m_pieces)

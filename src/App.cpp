@@ -34,9 +34,10 @@ int main()
                 chess2D.play(settings, animation);
                 ImGui::End();
                 //RENDER 3D
+                renderer3D.camera_position_and_orientation_listener(chess2D.get_selected_piece_index(), chess2D.get_turn().current_player);
                 renderer3D.run(chess2D.get_chessboard(), chess2D.get_move_processing(), animation, settings);
             // user windows
-            settings.show(animation);
+            settings.show(animation,chess2D.get_selected_piece_index(), renderer3D.use_camera());
             game_tracker.show(chess2D); },
             // CALLBACKS
             .key_callback             = [&](int key, int /*scancode*/, int action, int mods) {

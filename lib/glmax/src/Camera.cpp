@@ -4,6 +4,16 @@
 
 namespace glmax {
 
+Camera::Camera(bool is_track_ball)
+    : _is_track_ball(is_track_ball)
+{
+    glm::vec3 direction;
+    direction.x = cos(glm::radians(_yaw)) * cos(glm::radians(_pitch));
+    direction.y = sin(glm::radians(_pitch));
+    direction.z = sin(glm::radians(_yaw)) * cos(glm::radians(_pitch));
+    _front      = glm::normalize(direction);
+}
+
 glm::mat4 Camera::get_view_matrix()
 {
     if (_is_track_ball)
@@ -36,10 +46,29 @@ void Camera::process_mouse_movement(double xpos, double ypos)
     _yaw += xoffset * _sensitivity;
     _pitch -= yoffset * _sensitivity;
 
-    if (_pitch > 45.0f)
-        _pitch = 45.0f;
-    if (_pitch < 0.0f)
-        _pitch = 0.0f;
+    if (is_track_ball())
+    {
+        if (_pitch > 45.0f)
+            _pitch = 45.0f;
+        if (_pitch < 0.0f)
+            _pitch = 0.0f;
+    }
+    else
+    {
+        if (_pitch > 20.0f)
+            _pitch = 20.0f;
+        if (_pitch < -90.0f)
+            _pitch = -90.0f;
+    }
+
+    if (!_is_track_ball)
+    {
+        glm::vec3 direction;
+        direction.x = cos(glm::radians(_yaw)) * cos(glm::radians(_pitch));
+        direction.y = sin(glm::radians(_pitch));
+        direction.z = sin(glm::radians(_yaw)) * cos(glm::radians(_pitch));
+        _front      = glm::normalize(direction);
+    }
 }
 
 void Camera::process_scroll(double yoffset)
@@ -74,19 +103,41 @@ void Camera::process_input(int key, int action)
 // callbacks
 void Camera::free_move_callback(int key, int action)
 {
-    if (!is_track_ball() && !_isLocked)
-        process_input(key, action);
+    // if (!is_track_ball() && !_is_locked)
+    //     process_input(key, action);
 }
 
 void Camera::zoom_callback(double yoffset)
 {
-    if (is_track_ball() && !_isLocked)
+    // if (is_track_ball() && !_isLocked)
+    if (!_is_locked)
         process_scroll(yoffset);
 }
 
 void Camera::track_ball_move_callback(double xpos, double ypos)
 {
-    if (is_track_ball() && !_isLocked)
+    // if (is_track_ball() && !_isLocked)
+    if (!_is_locked)
         process_mouse_movement(xpos, ypos);
+}
+
+void Camera::active_camera_piece_view(float yaw)
+{
+    if (!_first_update_camera_piece_view)
+    {
+        _first_update_camera_track_ball = false;
+        set_camera_piece_orientation(yaw);
+        _first_update_camera_piece_view = true;
+    }
+}
+void Camera::active_camera_track_ball()
+{
+    if (!_first_update_camera_track_ball)
+    {
+        _first_update_camera_piece_view = false;
+        is_track_ball()                 = true;
+        reset_camera_track_ball();
+        _first_update_camera_track_ball = true;
+    }
 }
 } // namespace glmax

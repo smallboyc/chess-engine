@@ -1,11 +1,12 @@
 #pragma once
 #include <imgui.h>
+#include <optional>
 #include "Animation.hpp"
-
+#include "Camera.hpp"
 class Settings {
 public:
     Settings() = default;
-    void show(Animation& animation);
+    void show(Animation& animation, std::optional<int> selected_piece, glmax::Camera& camera);
     //
     bool is_legal_moves_scope_active() const { return m_show_legal_moves_scope; };
     bool is_highlight_threats_scope_active() const { return m_highlight_threats_scope; };
