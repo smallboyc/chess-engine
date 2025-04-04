@@ -1,8 +1,6 @@
 #pragma once
 #include <imgui.h>
 #include <glm/glm.hpp>
-#include <string>
-#include "game2D/utils.hpp"
 
 namespace Renderer3D {
 inline glm::vec2 get_position(const unsigned int index)
@@ -15,9 +13,13 @@ inline glm::vec3 world_position(glm::vec2 position, float elevation = 0.0f)
     return {-3.5f + position.x, 2 * elevation, -3.5f + position.y};
 }
 
+inline glm::vec3 box_positions(glm::vec3 world_position, float offset = 0.0f)
+{
+    return {world_position.x + offset, world_position.y, world_position.z + offset};
+}
+
 inline glm::vec3 imgui_vec4_to_glm_vec3(ImVec4 imgui_vec)
 {
     return {imgui_vec.x, imgui_vec.y, imgui_vec.z};
 }
 } // namespace Renderer3D
-

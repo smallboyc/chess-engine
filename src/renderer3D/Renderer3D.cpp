@@ -47,11 +47,11 @@ void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::op
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(window_width) / static_cast<float>(window_height), 0.1f, 100.0f);
 
     // RENDER SKYBOX (start)
-    glDepthFunc(GL_LEQUAL); 
+    glDepthFunc(GL_LEQUAL);
     glDepthMask(GL_FALSE);
 
     m_skybox_shader.use();
-    glm::mat4 view = glm::mat4(glm::mat3(m_camera.get_view_matrix())); 
+    glm::mat4 view = glm::mat4(glm::mat3(m_camera.get_view_matrix()));
 
     m_skybox_shader.set_uniform_1i("skybox", 0);
     m_skybox_shader.set_uniform_matrix_4fv("view", view);

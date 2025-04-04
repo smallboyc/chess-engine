@@ -6,6 +6,9 @@
 #include "buffers/VBO.hpp"
 #include "gui/Settings.hpp"
 
+
+
+
 // A GameObject is a game object (chessboard, pawn, queen) that contains information about all its instances : a single mesh, vao,vbo,ebo is used.
 class GameObject {
 public:

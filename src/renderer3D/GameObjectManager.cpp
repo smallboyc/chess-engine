@@ -1,6 +1,7 @@
 #include "GameObjectManager.hpp"
 #include <iostream>
 #include "game2D/Piece.hpp"
+#include "game2D/Types.hpp"
 #include "glm/fwd.hpp"
 #include "utils.hpp"
 
@@ -62,12 +63,23 @@ void GameObjectManager::load_all_pieces()
     }
 }
 
+void Chessboard3D::save_box(int index)
+{
+    glm::vec3 min = Renderer3D::box_positions((Renderer3D::world_position(Renderer3D::get_position(index))), -0.5f);
+    glm::vec3 max = Renderer3D::box_positions((Renderer3D::world_position(Renderer3D::get_position(index))), 0.5f);
+    boxes[index]  = {min, max};
+}
+
 void GameObjectManager::load_chessboard()
 {
     glm::vec3 center_position{glm::vec3(0.0f, 0.0f, 0.0f)};
-    m_chessboard.push_matrix(center_position);
-    m_chessboard.load_mesh("chessboard/chessboard.obj", "chessboard");
-    m_chessboard.setup_buffers();
+    m_chessboard.model.push_matrix(center_position);
+    m_chessboard.model.load_mesh("chessboard/chessboard.obj", "chessboard");
+    m_chessboard.model.setup_buffers();
+    for (int i = 0; i < 64; i++)
+    {
+        m_chessboard.save_box(i);
+    }
 }
 
 void GameObjectManager::move_piece(std::array<std::unique_ptr<Piece>, 64>& chessboard, MoveProcessing& moveProcessing, float& elapsedTime, Animation& animation)
@@ -112,7 +124,7 @@ void GameObjectManager::move_piece(std::array<std::unique_ptr<Piece>, 64>& chess
 
 void GameObjectManager::render_game_objects(glmax::Shader& shader, Settings& settings)
 {
-    m_chessboard.render(shader, settings);
+    m_chessboard.model.render(shader, settings);
 
     for (auto& [type, piece] : m_pieces)
     {
