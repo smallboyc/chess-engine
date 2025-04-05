@@ -45,7 +45,8 @@ public:
     void toggle_lock() { _is_locked = !_is_locked; };
     bool is_locked() const { return _is_locked; };
     //
-    bool& is_track_ball() { return _is_track_ball; };
+    bool is_track_ball() const { return _is_track_ball; };
+    void set_track_ball(bool is_track_ball);
     //
     // callbacks
     void free_move_callback(int key, int action);
@@ -58,25 +59,18 @@ public:
     {
         _position = {position.x, 1.4f, position.z};
     };
-    void set_camera_piece_orientation(const float& yaw)
+    //
+    glm::vec3 calculate_direction(float radius = 1.0f) const
     {
-        _yaw   = yaw;
-        _pitch = -5.0f;
+        return {
+            radius * cos(glm::radians(_yaw)) * cos(glm::radians(_pitch)),
+            radius * sin(glm::radians(_pitch)),
+            radius * sin(glm::radians(_yaw)) * cos(glm::radians(_pitch))
+        };
+    }
 
-        glm::vec3 direction;
-        direction.x = cos(glm::radians(_yaw)) * cos(glm::radians(_pitch));
-        direction.y = sin(glm::radians(_pitch));
-        direction.z = sin(glm::radians(_yaw)) * cos(glm::radians(_pitch));
-        _front      = glm::normalize(direction);
-    };
-    void reset_camera_track_ball()
-    {
-        _position = glm::vec3(0.0f, 1.0f, 0.0f);
-        _target   = glm::vec3(0.0f, 0.0f, 0.0f);
-        _front    = glm::vec3(1.0f, 0.0f, 1.0f);
-        _up       = glm::vec3(0.0f, 1.0f, 0.0f);
-        _pitch    = 30.0f;
-    };
+    void set_camera_piece_orientation(const float& yaw);
+    void reset_camera_track_ball();
 };
 
 } // namespace glmax

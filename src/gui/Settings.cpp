@@ -32,7 +32,11 @@ void Settings::show(Animation& animation, std::optional<int> selected_piece, glm
     {
         ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "By unchecking this box, the camera will follow the selected piece");
         ImGui::Dummy(ImVec2(0.0f, 10.0f));
-        ImGui::Checkbox("Active Trackball", &camera.is_track_ball());
+        bool is_track_ball = camera.is_track_ball();
+        if (ImGui::Checkbox("Active Trackball", &is_track_ball))
+        {
+            camera.set_track_ball(is_track_ball);
+        }
     }
 
     ImGui::End();
