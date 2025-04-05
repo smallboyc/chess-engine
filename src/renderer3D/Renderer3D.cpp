@@ -102,8 +102,6 @@ void Renderer3D::run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::op
         // -> Update data after the animation's end
         if (!animation.is_animating)
         {
-            std::cout << "Update data after the end of animation!"
-                      << "\n";
             m_game_object_manager.update_pieces_positions(chessboard);
             m_game_object_manager.update_pieces_data();
             move_processing.reset(); // reset the move processing after animation (from / to reinitialized)

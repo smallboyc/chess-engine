@@ -4,7 +4,7 @@
 #include <memory>
 #include <optional>
 #include "./gui/Settings.hpp"
-#include "Animation.hpp"
+#include "renderer3D/Animation.hpp"
 #include "King.hpp"
 #include "Piece.hpp"
 #include "Types.hpp"

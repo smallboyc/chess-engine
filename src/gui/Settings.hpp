@@ -1,7 +1,7 @@
 #pragma once
 #include <imgui.h>
 #include <optional>
-#include "Animation.hpp"
+#include "renderer3D/Animation.hpp"
 #include "Camera.hpp"
 class Settings {
 public:

@@ -33,8 +33,6 @@ void King::move_piece(const int from, const int to, Chessboard& board, Turn& tur
     {
         if (handle_castling(to, board))
         {
-            std::cout << "Roque!"
-                      << "\n";
             m_castling.reset();
         }
     }
