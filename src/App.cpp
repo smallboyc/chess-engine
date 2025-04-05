@@ -1,8 +1,11 @@
 #include "App.hpp"
+#include "game2D/utils.hpp"
 
 void App::init()
 {
     ImGui::GetStyle().ItemSpacing = ImVec2(0.0f, 0.0f);
+    // FONT
+    load_font("../../assets/fonts/PoetsenOne-Regular.ttf", 16.0f);
     // GAME 2D
     m_chess2D.load_all_textures("../../assets/images/game2D/");
     // RENDER 3D
