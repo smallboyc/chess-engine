@@ -3,7 +3,7 @@
 #include <cstdarg>
 #include "Animation.hpp"
 
-void Settings::show(Animation& animation)
+void Settings::show(Animation& animation, std::optional<int> selected_piece, glmax::Camera& camera)
 {
     ImGui::Begin("Settings");
     ImGui::Dummy(ImVec2(0.0f, 20.0f));
@@ -18,7 +18,26 @@ void Settings::show(Animation& animation)
     animation_duration_widget(animation);
     //
     ImGui::Dummy(ImVec2(0.0f, 20.0f));
-    ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.4f, 1.0f), "Toggle Camera : Press L in the 3D view");
+    if (camera.is_locked())
+    {
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.4f, 1.0f), "Press L to unlock the camera rotation");
+    }
+    else
+    {
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Press L to lock the camera rotation");
+    }
+
+    ImGui::Dummy(ImVec2(0.0f, 20.0f));
+    if (selected_piece.has_value())
+    {
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "By unchecking this box, the camera will follow the selected piece");
+        ImGui::Dummy(ImVec2(0.0f, 10.0f));
+        bool is_track_ball = camera.is_track_ball();
+        if (ImGui::Checkbox("Active Trackball", &is_track_ball))
+        {
+            camera.set_track_ball(is_track_ball);
+        }
+    }
 
     ImGui::End();
 }

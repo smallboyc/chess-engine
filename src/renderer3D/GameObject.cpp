@@ -20,10 +20,10 @@ void GameObject::render(glmax::Shader& shader, Settings& settings) const
         // Check if the material has a texture
         if (material.m_hasMapKd)
         {
-            glm::vec3 custom_cell_color = Renderer3D::imgui_vec4_to_glm_vec3(settings.get_secondary_color());
+            glm::vec3 custom_cell_color = Renderer3DUtils::imgui_vec4_to_glm_vec3(settings.get_secondary_color());
             if (material.m_name == "BLACK_CELL")
             {
-                custom_cell_color = Renderer3D::imgui_vec4_to_glm_vec3(settings.get_primary_color());
+                custom_cell_color = Renderer3DUtils::imgui_vec4_to_glm_vec3(settings.get_primary_color());
             }
             shader.set_uniform_3fv("colorFactor", custom_cell_color);
             shader.set_uniform_1i("map_Kd", material.m_mapKd.getID());

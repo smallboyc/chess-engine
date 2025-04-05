@@ -16,6 +16,8 @@ public:
     void           toggle_active_camera_callback(int key, int action);
     void           init(std::array<std::unique_ptr<Piece>, 64>& chessboard);
     void           run(std::array<std::unique_ptr<Piece>, 64>& chessboard, std::optional<MoveProcessing>& move_processing, Animation& animation, Settings& Settings);
+    void           camera_position_and_orientation_listener(std::optional<int> selected_piece_index, Color current_player);
+    void           toggle_camera_piece_view();
 
 private:
     glmax::Camera                         m_camera{true};
@@ -26,4 +28,5 @@ private:
     int                                   window_width;
     int                                   window_height;
     std::chrono::steady_clock::time_point start_time;
+
 };

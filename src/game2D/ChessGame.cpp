@@ -2,7 +2,6 @@
 #include <imgui.h>
 #include <cmath>
 #include <filesystem>
-#include <iostream>
 #include <memory>
 #include <optional>
 #include <unordered_map>
@@ -33,6 +32,17 @@ std::optional<Texture> ChessGame::get_selected_piece_texture()
     {
         auto& [index, piece] = m_selected_piece.value();
         return piece->get_texture(m_textures);
+    }
+    return std::nullopt;
+}
+
+// Get index of the selected piece for the camera
+std::optional<int> ChessGame::get_selected_piece_index()
+{
+    if (m_selected_piece.has_value())
+    {
+        auto& [index, piece] = m_selected_piece.value();
+        return index;
     }
     return std::nullopt;
 }

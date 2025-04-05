@@ -37,6 +37,7 @@ public:
     Turn                           get_turn() const { return m_turn; };
     Textures                       get_textures() const { return m_textures; };
     std::optional<Texture>         get_selected_piece_texture();
+    std::optional<int>             get_selected_piece_index();
     std::vector<MoveStatus>        get_moves_saved() const { return m_move_saves; };    // used for the history in the GUI
     std::optional<MoveProcessing>& get_move_processing() { return m_move_processing; }; // used for smooth 3D animation
     Warnings                       get_warnings() { return m_warnings; };
