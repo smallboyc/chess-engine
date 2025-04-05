@@ -1,7 +1,6 @@
 #include "Settings.hpp"
 #include <imgui.h>
 #include <cstdarg>
-#include "Animation.hpp"
 
 void Settings::show(Animation& animation, std::optional<int> selected_piece, glmax::Camera& camera)
 {
