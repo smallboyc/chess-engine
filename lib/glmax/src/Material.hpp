@@ -1,5 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
+#include <optional>
 #include <string>
 #include "Texture.hpp"
 
@@ -21,18 +22,12 @@ struct Material {
     float     m_illum;     // Illumination model (illum)
     float     m_sharpness; // Sharpness of highlight (unused in all cases)
     //
-    Texture m_mapKa; // ambient
-    bool    m_hasMapKa;
-    Texture m_mapKd; // diffuse
-    bool    m_hasMapKd;
-    Texture m_mapKs; // specular
-    bool    m_hasMapKs;
-    Texture m_mapNs;
-    bool    m_hasMapNs;
-    Texture m_mapD;
-    bool    m_hasMapD;
-    Texture m_mapBump;
-    bool    m_hasMapBump;
+    std::optional<Texture> m_mapKa; // ambient
+    std::optional<Texture> m_mapKd; // diffuse
+    std::optional<Texture> m_mapKs; // specular
+    std::optional<Texture> m_mapNs;
+    std::optional<Texture> m_mapD;
+    std::optional<Texture> m_mapBump;
     // 1 slot pour chaque textures
 };
 

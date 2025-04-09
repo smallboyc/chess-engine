@@ -18,7 +18,7 @@ void GameObject::render(glmax::Shader& shader, Settings& settings) const
         shader.set_uniform_1f("Ns", material.m_Ns);
 
         // Check if the material has a texture
-        if (material.m_hasMapKd)
+        if (material.m_mapKd.has_value())
         {
             glm::vec3 custom_cell_color = Renderer3DUtils::imgui_vec4_to_glm_vec3(settings.get_secondary_color());
             if (material.m_name == "BLACK_CELL")
@@ -26,8 +26,8 @@ void GameObject::render(glmax::Shader& shader, Settings& settings) const
                 custom_cell_color = Renderer3DUtils::imgui_vec4_to_glm_vec3(settings.get_primary_color());
             }
             shader.set_uniform_3fv("colorFactor", custom_cell_color);
-            shader.set_uniform_1i("map_Kd", material.m_mapKd.getID());
-            material.m_mapKd.bind(material.m_mapKd.getID());
+            shader.set_uniform_1i("map_Kd", material.m_mapKd->getID());
+            material.m_mapKd->bind(material.m_mapKd->getID());
             shader.set_uniform_1i("useTexture", true);
         }
         else
@@ -41,8 +41,8 @@ void GameObject::render(glmax::Shader& shader, Settings& settings) const
             glDrawElementsInstanced(GL_TRIANGLES, submesh.m_index_count, GL_UNSIGNED_INT, (const GLvoid*)(submesh.m_index_offset * sizeof(uint32_t)), m_model_matrices.size());
         else if (m_model_matrices.size() != 0) // Single instance = chessboard
             glDrawElements(GL_TRIANGLES, submesh.m_index_count, GL_UNSIGNED_INT, (const GLvoid*)(submesh.m_index_offset * sizeof(uint32_t)));
-        if (material.m_hasMapKd)
-            material.m_mapKd.unbind();
+        if (material.m_mapKd.has_value())
+            material.m_mapKd->unbind();
     }
 
     m_vao.unbind();
@@ -129,7 +129,7 @@ void GameObject::setup_buffers()
         m_colorVBO.unbind();
     }
     // End of Instancing
-    
+
     m_vao.unbind();
 }
 

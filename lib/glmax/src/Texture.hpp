@@ -8,9 +8,6 @@ namespace glmax {
 class Texture {
 public:
     Texture()                          = default;
-    Texture(const Texture&)            = delete;
-    Texture(Texture&&)                 = default;
-    Texture& operator=(const Texture&) = delete;
     explicit Texture(const std::string& filePath);
     ~Texture();
 

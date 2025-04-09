@@ -1,7 +1,9 @@
 #include "Mesh.hpp"
 #include <cstddef>
 #include <iostream>
+#include <optional>
 #include <vector>
+#include "Texture.hpp"
 //
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
@@ -71,38 +73,38 @@ void fill_material(Material& mat, const tinyobj::material_t& material)
     // Textures
     if (!material.ambient_texname.empty())
     {
-        mat.m_mapKa.load_texture(material.ambient_texname);
-        mat.m_hasMapKa = true;
+        mat.m_mapKa = std::make_optional(Texture{});
+        mat.m_mapKa->load_texture(material.ambient_texname);
     }
 
     if (!material.diffuse_texname.empty())
     {
-        mat.m_mapKd.load_texture(material.diffuse_texname);
-        mat.m_hasMapKd = true;
+        mat.m_mapKd = std::make_optional(Texture{});
+        mat.m_mapKd->load_texture(material.diffuse_texname);
     }
 
     if (!material.specular_texname.empty())
     {
-        mat.m_mapKs.load_texture(material.specular_texname);
-        mat.m_hasMapKs = true;
+        mat.m_mapKs = std::make_optional(Texture{});
+        mat.m_mapKs->load_texture(material.specular_texname);
     }
 
     if (!material.specular_highlight_texname.empty())
     {
-        mat.m_mapNs.load_texture(material.specular_highlight_texname);
-        mat.m_hasMapNs = true;
+        mat.m_mapNs = std::make_optional(Texture{});
+        mat.m_mapNs->load_texture(material.specular_highlight_texname);
     }
 
     if (!material.alpha_texname.empty())
     {
-        mat.m_mapD.load_texture(material.alpha_texname);
-        mat.m_hasMapD = true;
+        mat.m_mapD = std::make_optional(Texture{});
+        mat.m_mapD->load_texture(material.alpha_texname);
     }
 
     if (!material.bump_texname.empty())
     {
-        mat.m_mapBump.load_texture(material.bump_texname);
-        mat.m_hasMapBump = true;
+        mat.m_mapBump = std::make_optional(Texture{});
+        mat.m_mapBump->load_texture(material.bump_texname);
     }
 }
 
