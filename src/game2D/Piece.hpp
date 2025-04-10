@@ -1,5 +1,6 @@
 #pragma once
 #include <imgui.h>
+#include <algorithm>
 #include <glm/glm.hpp>
 #include <string>
 #include <vector>
