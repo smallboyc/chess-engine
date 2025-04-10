@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_map>
 #include "glm/fwd.hpp"
+#include <optional>
 
 namespace glmax {
 
